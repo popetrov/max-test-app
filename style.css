@@ -8,20 +8,17 @@ body {
   color: #122033;
 
   background-color: #8bc7ed;
-
-  background-image:
-    url("data:image/svg+xml,%3Csvg width='320' height='320' viewBox='0 0 320 320' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%2370b8f4' stroke-width='2' stroke-opacity='0.35' stroke-linecap='round' stroke-linejoin='round'%3E%3C!-- молоток --%3E%3Cpath d='M40 60l20-20 10 10-20 20z'/%3E%3Cpath d='M55 45l25 25'/%3E%3C!-- отвертка --%3E%3Cpath d='M140 40l30 30'/%3E%3Cpath d='M135 45l10-10 40 40-10 10z'/%3E%3C!-- ключ --%3E%3Ccircle cx='240' cy='60' r='10'/%3E%3Cpath d='M240 70l30 30'/%3E%3C!-- пила --%3E%3Cpath d='M60 180l60-20 10 20-60 20z'/%3E%3C!-- трактор упрощенно --%3E%3Crect x='200' y='180' width='40' height='20' rx='4'/%3E%3Ccircle cx='210' cy='210' r='8'/%3E%3Ccircle cx='235' cy='210' r='10'/%3E%3C!-- каска --%3E%3Cpath d='M120 200a20 20 0 0 1 40 0'/%3E%3Cline x1='120' y1='200' x2='160' y2='200'/%3E%3C!-- гаечный ключ второй --%3E%3Cpath d='M260 260l20-20'/%3E%3Ccircle cx='260' cy='260' r='6'/%3E%3C/g%3E%3C/svg%3E");
-
+  background-image: url("pattern.svg");
   background-repeat: repeat;
-  background-size: 260px;
+  background-size: 250px 250px;
+  background-attachment: fixed;
 }
-
 
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(255, 255, 255, 0.35); /* смягчает паттерн */
+  background: rgba(255, 255, 255, 0.3);
   pointer-events: none;
   z-index: 0;
 }
