@@ -3,30 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
   <title>СТРОЙПОДРЯД</title>
-
   <link rel="stylesheet" href="style.css">
-
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#20A8F5">
 </head>
 <body>
 
   <div class="app">
-
     <header class="top-bar">
       <div class="app-name">СТРОЙПОДРЯД</div>
     </header>
 
     <main class="content">
-
       <section class="hero-card">
         <div class="max-badge">mini app</div>
-
         <h1>СТРОЙПОДРЯД в МАКС</h1>
-
         <p>
           Добро пожаловать. Здесь мы собираем информацию со всех наших чатов,
           чатов телеграм и платных сервисов по поиску субподрядчиков.
@@ -34,30 +25,16 @@
       </section>
 
       <section class="menu">
-        <a href="find-contractor.html" class="menu-button">
-          Найти исполнителя
-        </a>
-
-        <a href="find-workers.html" class="menu-button">
-          Найти сотрудников для исполнения контрактов
-        </a>
-
-        <a href="customer-contacts.html" class="menu-button">
-          Контакты заказчиков
-        </a>
-
-        <a href="subscription.html" class="menu-button primary">
-          Оплатить подписку
-        </a>
+        <button class="menu-button" onclick="goToPage('find-contractor.html')">Найти исполнителя</button>
+        <button class="menu-button" onclick="goToPage('find-workers.html')">Найти сотрудников для исполнения контрактов</button>
+        <button class="menu-button" onclick="goToPage('customer-contacts.html')">Контакты заказчиков</button>
+        <button class="menu-button primary" onclick="goToPage('subscription.html')">Оплатить подписку</button>
       </section>
-
     </main>
 
-    <footer class="footer">
-      Сервис для строителей, подрядчиков и заказчиков
-    </footer>
-
+    <footer class="footer">Сервис для строителей, подрядчиков и заказчиков</footer>
   </div>
 
+  <script src="script.js"></script>
 </body>
 </html>

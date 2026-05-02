@@ -15,8 +15,7 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background-image:
-    radial-gradient(rgba(32, 168, 245, 0.08) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(32, 168, 245, 0.08) 1px, transparent 1px);
   background-size: 22px 22px;
   pointer-events: none;
 }
@@ -29,7 +28,8 @@ body::before {
   padding: 0 16px 24px;
 }
 
-.top-bar {
+.top-bar,
+.page-header {
   position: sticky;
   top: 0;
   z-index: 10;
@@ -48,6 +48,31 @@ body::before {
   font-weight: 800;
   letter-spacing: 0.08em;
   color: #168ed5;
+}
+
+.page-header {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+}
+
+.back-btn {
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #168ed5;
+  font-size: 24px;
+  font-weight: 700;
+  box-shadow: 0 8px 22px rgba(31, 121, 184, 0.12);
+}
+
+.page-title {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 800;
+  color: #122033;
 }
 
 .content {
@@ -95,28 +120,39 @@ body::before {
   margin-top: 22px;
 }
 
-.menu-button {
+.menu-button,
+.home-button {
+  width: 100%;
   display: block;
-  padding: 18px 18px;
+  border: none;
+  padding: 18px;
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.92);
   box-shadow: 0 10px 26px rgba(15, 62, 105, 0.08);
   color: #122033;
-  text-decoration: none;
   font-size: 16px;
   font-weight: 700;
   line-height: 1.25;
-  transition: 0.18s ease;
-}
-
-.menu-button:active {
-  transform: scale(0.98);
+  text-align: left;
 }
 
 .menu-button.primary {
   background: linear-gradient(135deg, #20a8f5, #1677ff);
   color: white;
   box-shadow: 0 14px 32px rgba(22, 119, 255, 0.28);
+}
+
+.home-button {
+  margin-top: 18px;
+  text-align: center;
+  background: linear-gradient(135deg, #20a8f5, #1677ff);
+  color: white;
+}
+
+.menu-button:active,
+.home-button:active,
+.back-btn:active {
+  transform: scale(0.98);
 }
 
 .footer {
