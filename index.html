@@ -4,159 +4,60 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <title>Все Подряд — мини-апп MAX</title>
+  <title>СТРОЙПОДРЯД</title>
 
   <link rel="stylesheet" href="style.css">
 
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#2563eb">
+  <meta name="theme-color" content="#20A8F5">
 </head>
 <body>
 
-  <header class="app-header">
-      <div>
-        Арстана сайт строителей
-      </div>
-  </header>
+  <div class="app">
 
-  <main class="app">
+    <header class="top-bar">
+      <div class="app-name">СТРОЙПОДРЯД</div>
+    </header>
 
-    <section class="hero">
-      <div class="label">Строительные заказы в MAX</div>
+    <main class="content">
 
-      <h1>Находите подряды, объекты и заявки рядом с вами</h1>
+      <section class="hero-card">
+        <div class="max-badge">mini app</div>
 
-      <p>
-        Тестовая версия сервиса для поиска строительных заказов,
-        исполнителей, материалов и техники внутри мини-приложения.
-      </p>
+        <h1>СТРОЙПОДРЯД в МАКС</h1>
 
-      <div class="search-box">
-        <input type="text" placeholder="Что ищем? Например: ремонт, фасад, бетон">
-        <button>Найти</button>
-      </div>
-    </section>
+        <p>
+          Добро пожаловать. Здесь мы собираем информацию со всех наших чатов,
+          чатов телеграм и платных сервисов по поиску субподрядчиков.
+        </p>
+      </section>
 
-    <section class="quick-actions">
-      <button>Найти заказ</button>
-      <button>Разместить заявку</button>
-      <button>Найти бригаду</button>
-      <button>Материалы</button>
-    </section>
+      <section class="menu">
+        <a href="find-contractor.html" class="menu-button">
+          Найти исполнителя
+        </a>
 
-    <section class="section">
-      <h2>Популярные разделы</h2>
+        <a href="find-workers.html" class="menu-button">
+          Найти сотрудников для исполнения контрактов
+        </a>
 
-      <div class="category-grid">
-        <div class="category-card">
-          <h3>Строительные работы</h3>
-          <p>Общестрой, отделка, кровля, фасады</p>
-        </div>
+        <a href="customer-contacts.html" class="menu-button">
+          Контакты заказчиков
+        </a>
 
-        <div class="category-card">
-          <h3>Ремонт и отделка</h3>
-          <p>Квартиры, офисы, коммерческие помещения</p>
-        </div>
+        <a href="subscription.html" class="menu-button primary">
+          Оплатить подписку
+        </a>
+      </section>
 
-        <div class="category-card">
-          <h3>Инженерные работы</h3>
-          <p>Электрика, сантехника, вентиляция</p>
-        </div>
+    </main>
 
-        <div class="category-card">
-          <h3>Техника и инструмент</h3>
-          <p>Аренда техники, спецтехника, оборудование</p>
-        </div>
-      </div>
-    </section>
+    <footer class="footer">
+      Сервис для строителей, подрядчиков и заказчиков
+    </footer>
 
-    <section class="section">
-      <h2>Свежие заявки</h2>
+  </div>
 
-      <div class="order-card">
-        <div class="order-top">
-          <span>Ремонт помещения</span>
-          <strong>до 450 000 ₽</strong>
-        </div>
-        <p>Нужна бригада для отделки коммерческого помещения 120 м².</p>
-        <div class="order-meta">Москва · отклик до 3 дней</div>
-      </div>
-
-      <div class="order-card">
-        <div class="order-top">
-          <span>Фасадные работы</span>
-          <strong>договорная</strong>
-        </div>
-        <p>Ищем подрядчика на утепление и облицовку фасада.</p>
-        <div class="order-meta">Санкт-Петербург · срочно</div>
-      </div>
-
-      <div class="order-card">
-        <div class="order-top">
-          <span>Поставка бетона</span>
-          <strong>от 80 м³</strong>
-        </div>
-        <p>Требуется поставщик бетона с доставкой на объект.</p>
-        <div class="order-meta">Калининград · на этой неделе</div>
-      </div>
-    </section>
-
-    <section class="section dark-block">
-      <h2>Как это будет работать</h2>
-
-      <div class="steps">
-        <div>
-          <span>01</span>
-          <p>Заказчик размещает заявку</p>
-        </div>
-
-        <div>
-          <span>02</span>
-          <p>Исполнители видят подходящие заказы</p>
-        </div>
-
-        <div>
-          <span>03</span>
-          <p>Стороны связываются и договариваются</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <h2>Преимущества</h2>
-
-      <div class="benefits">
-        <div class="benefit">
-          <h3>Быстрый доступ</h3>
-          <p>Сервис открывается прямо из MAX.</p>
-        </div>
-
-        <div class="benefit">
-          <h3>Мобильный формат</h3>
-          <p>Все экраны адаптированы под телефон.</p>
-        </div>
-
-        <div class="benefit">
-          <h3>Развитие без переделки</h3>
-          <p>Позже добавим авторизацию, базу, фильтры и отклики.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="cta">
-      <h2>Готовы протестировать мини-апп?</h2>
-      <p>Это статичная версия. Следующим шагом добавим переходы, меню и действия кнопок.</p>
-      <button>Начать тест</button>
-    </section>
-
-  </main>
-
-  <footer class="footer">
-    <strong>Все Подряд</strong>
-    <p>Тестовый строительный мини-апп для MAX.</p>
-  </footer>
-
-  <script src="script.js"></script>
 </body>
 </html>
