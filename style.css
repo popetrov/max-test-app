@@ -1,35 +1,138 @@
-  body {
-    font-family: Arial, sans-serif;
-    background: #f4f6fb;
-    margin: 0;
-    padding: 20px;
-  }
+* {
+  box-sizing: border-box;
+}
 
-  h1, h2 {
-    margin-bottom: 10px;
-  }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6fb;
+  color: #1f2937;
+}
 
-  button {
-    display: block;
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 15px;
-    border: none;
-    border-radius: 10px;
-    background: #2563eb;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-  }
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: white;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+}
 
-  button:hover {
-    background: #1d4ed8;
-  }
+.logo {
+  font-size: 18px;
+  font-weight: 700;
+}
 
-  #home, #page1, #page2, #page3, #page4 {
-    max-width: 400px;
-    margin: 0 auto;
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-  }
+.menu-button,
+button {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  background: #2563eb;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+main {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.hero {
+  background: white;
+  border-radius: 24px;
+  padding: 24px 20px;
+  margin-bottom: 16px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  background: #e0f2fe;
+  color: #0369a1;
+  border-radius: 999px;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.hero h1 {
+  font-size: 30px;
+  line-height: 1.1;
+  margin: 0 0 14px;
+}
+
+.hero p,
+.section p,
+.card p,
+.feature p,
+.footer p {
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.hero-buttons {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.secondary {
+  background: #eef2ff;
+  color: #1e40af;
+}
+
+.categories,
+.features {
+  display: grid;
+  gap: 12px;
+}
+
+.card,
+.feature,
+.simple-block,
+.cta {
+  background: white;
+  border-radius: 20px;
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+}
+
+.card h3,
+.feature h3 {
+  margin: 0 0 8px;
+}
+
+.section {
+  margin-top: 22px;
+}
+
+.section h2 {
+  margin: 0 0 14px;
+  font-size: 24px;
+}
+
+.full {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.cta {
+  text-align: center;
+  background: #111827;
+  color: white;
+}
+
+.cta p {
+  color: #d1d5db;
+}
+
+.footer {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}

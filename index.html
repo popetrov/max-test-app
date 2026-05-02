@@ -4,63 +4,108 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
+  <title>Объекты.online — тестовый мини-апп</title>
+
+  <link rel="stylesheet" href="style.css">
+
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-
   <meta name="theme-color" content="#2563eb">
-  <title>Тест мини-аппа</title>
-  <link rel="stylesheet" href="style.css">
-  
 </head>
 <body>
 
-<div id="home">
-    <div style="margin-bottom:20px; font-size:18px; font-weight:bold;">
-  Мой мини-апп
-</div>
-  <h1>Главная страница</h1>
+  <header class="header">
+    <div class="logo">Объекты.online</div>
+    <button class="menu-button">Меню</button>
+  </header>
 
-  <button onclick="openPage('page1')">Страница 1</button>
-  <button onclick="openPage('page2')">Страница 2</button>
-  <button onclick="openPage('page3')">Страница 3</button>
-  <button onclick="openPage('page4')">Страница 4</button>
-</div>
+  <main>
+    <section class="hero">
+      <div class="badge">Строительство и услуги</div>
+      <h1>Строительная площадка нового поколения</h1>
+      <p>
+        Доска объявлений с умным чатом и сервисом для управления объектами.
+        Находите строителей, поставщиков, материалы и технику.
+      </p>
 
-<div id="page1" style="display:none;">
-    <div style="margin-bottom:20px; font-size:18px; font-weight:bold;">
-  Страница 1
-</div>
-  <h2>Страница 1</h2>
-  <p>Тестовая информация 1</p>
-  <button onclick="goHome()">Назад</button>
-</div>
+      <div class="hero-buttons">
+        <button>Начать бесплатно</button>
+        <button class="secondary">Смотреть объявления</button>
+      </div>
+    </section>
 
-<div id="page2" style="display:none;">
-    <div style="margin-bottom:20px; font-size:18px; font-weight:bold;">
-  Страница 1
-</div>
-  <h2>Страница 2</h2>
-  <p>Тестовая информация 2</p>
-  <button onclick="goHome()">Назад</button>
-</div>
+    <section class="categories">
+      <div class="card">
+        <h3>Ищите строителей</h3>
+        <p>Бригады, отделочники, электрики, сантехники</p>
+      </div>
 
-<div id="page3" style="display:none;">
-    <div style="margin-bottom:20px; font-size:18px; font-weight:bold;">
-  Страница 1
-</div>
-  <h2>Страница 3</h2>
-  <p>Тестовая информация 3</p>
-  <button onclick="goHome()">Назад</button>
-</div>
+      <div class="card">
+        <h3>Ищите материалы</h3>
+        <p>Кирпич, бетон, пиломатериалы, кровля</p>
+      </div>
 
-<div id="page4" style="display:none;">
-    <div style="margin-bottom:20px; font-size:18px; font-weight:bold;">
-  Страница 1
-</div>
-  <h2>Страница 4</h2>
-  <p>Тестовая информация 4</p>
-  <button onclick="goHome()">Назад</button>
-</div>
-<script src="script.js"></script>
+      <div class="card">
+        <h3>Ищите технику</h3>
+        <p>Экскаваторы, краны, самосвалы, инструмент</p>
+      </div>
+
+      <div class="card">
+        <h3>Заводите знакомства</h3>
+        <p>Полезные контакты в строительной отрасли</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Почему Объекты.online?</h2>
+
+      <div class="features">
+        <div class="feature">
+          <h3>Умный поиск</h3>
+          <p>Находите нужных специалистов и материалы за секунды.</p>
+        </div>
+
+        <div class="feature">
+          <h3>Встроенный чат</h3>
+          <p>Общайтесь напрямую с поставщиками и строителями.</p>
+        </div>
+
+        <div class="feature">
+          <h3>Управление объектами</h3>
+          <p>Ведите строительство поэтапно — от участка до мебели.</p>
+        </div>
+
+        <div class="feature">
+          <h3>Надёжные исполнители</h3>
+          <p>Проверенные профили с отзывами и портфолио.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section simple-block">
+      <h2>Свежие объявления</h2>
+      <p>Здесь позже появятся карточки объявлений.</p>
+      <button class="secondary full">Все объявления</button>
+    </section>
+
+    <section class="section simple-block">
+      <h2>В ленте</h2>
+      <p>Статьи и разборы от участников площадки — практика, опыт, идеи для ваших объектов.</p>
+      <button class="secondary full">Открыть ленту</button>
+    </section>
+
+    <section class="section cta">
+      <h2>Готовы начать строительство?</h2>
+      <p>Зарегистрируйтесь и получите доступ к строителям, поставщикам и объявлениям.</p>
+      <button>Зарегистрироваться бесплатно</button>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <strong>Объекты.online</strong>
+    <p>Онлайн-сервис для строительства.</p>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
