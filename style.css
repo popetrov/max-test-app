@@ -8,17 +8,16 @@ body {
   color: #122033;
 
   background-color: #8bc7ed;
-  background-image: url("pattern.svg");
+  background-image: url("./pattern.svg");
   background-repeat: repeat;
   background-size: 250px 250px;
-  background-attachment: fixed;
 }
 
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
   pointer-events: none;
   z-index: 0;
 }
