@@ -7,11 +7,11 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   color: #122033;
 
-  background-color: #8EC5FC;
+  background-color: #86c9fb;
   background-image:
-    url("data:image/svg+xml,%3Csvg width='300' height='300' viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.32' stroke-width='2'%3E%3Cpath d='M32 38c18-14 39-12 52 2'/%3E%3Cpath d='M205 42c20 8 31 22 34 43'/%3E%3Cpath d='M56 192c23 6 42 2 57-14'/%3E%3Cpath d='M182 214c13 17 31 25 55 22'/%3E%3Ccircle cx='72' cy='82' r='12'/%3E%3Ccircle cx='228' cy='142' r='10'/%3E%3Ccircle cx='115' cy='244' r='8'/%3E%3Crect x='168' y='78' width='34' height='22' rx='8'/%3E%3Crect x='38' y='232' width='36' height='24' rx='8'/%3E%3Cpath d='M252 250l18 18M270 250l-18 18'/%3E%3Cpath d='M122 122l22 0M133 111l0 22'/%3E%3Cpath d='M24 128c14-7 26-7 40 0'/%3E%3Cpath d='M206 286c11-12 24-17 41-14'/%3E%3C/g%3E%3Cg fill='%23ffffff' fill-opacity='0.22'%3E%3Ccircle cx='28' cy='278' r='4'/%3E%3Ccircle cx='145' cy='36' r='4'/%3E%3Ccircle cx='274' cy='102' r='4'/%3E%3Ccircle cx='92' cy='150' r='3'/%3E%3Ccircle cx='258' cy='204' r='3'/%3E%3C/g%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg width='420' height='420' viewBox='0 0 420 420' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%232d97ee' stroke-opacity='0.34' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M42 40c30-22 62-18 83 4'/%3E%3Cpath d='M300 42c30 12 48 34 52 66'/%3E%3Cpath d='M72 274c33 9 64 3 86-20'/%3E%3Cpath d='M252 306c22 25 48 35 82 30'/%3E%3Ccircle cx='93' cy='112' r='18'/%3E%3Ccircle cx='315' cy='188' r='15'/%3E%3Ccircle cx='168' cy='345' r='12'/%3E%3Ccircle cx='198' cy='68' r='18'/%3E%3Ccircle cx='50' cy='352' r='15'/%3E%3Cpath d='M195 180l32 0M211 164l0 32'/%3E%3Cpath d='M360 340l24 24M384 340l-24 24'/%3E%3Crect x='245' y='95' width='48' height='30' rx='9'/%3E%3Crect x='48' y='320' width='52' height='34' rx='10'/%3E%3Cpath d='M36 184c22-12 43-12 65 0'/%3E%3Cpath d='M292 392c17-18 38-26 62-21'/%3E%3Cpath d='M130 132l34 18 36-18-36-18z'/%3E%3Cpath d='M270 250l42-22 44 22-44 22z'/%3E%3Cpath d='M95 210c14-18 33-23 55-14 11 23 6 42-14 56-23-3-37-16-41-42z'/%3E%3Cpath d='M332 118c18-8 35-8 52 0l-26 44z'/%3E%3Cpath d='M135 390c14-13 29-17 47-10'/%3E%3Cpath d='M18 92l18 10 18-10-18-10z'/%3E%3Cpath d='M370 24l16 9 16-9-16-9z'/%3E%3C/g%3E%3Cg fill='none' stroke='%232d97ee' stroke-opacity='0.30' stroke-width='2'%3E%3Cpath d='M122 34l10 18 20 3-15 14 4 20-19-10-18 10 3-20-15-14 21-3z'/%3E%3Cpath d='M32 244l8 14 16 2-12 11 3 16-15-8-14 8 3-16-12-11 16-2z'/%3E%3Cpath d='M358 255l8 14 16 2-12 11 3 16-15-8-14 8 3-16-12-11 16-2z'/%3E%3Cpath d='M210 300l9 15 17 3-13 12 3 17-16-8-16 8 3-17-13-12 17-3z'/%3E%3C/g%3E%3Cg fill='%232d97ee' fill-opacity='0.25'%3E%3Ccircle cx='36' cy='392' r='4'/%3E%3Ccircle cx='215' cy='32' r='4'/%3E%3Ccircle cx='388' cy='148' r='4'/%3E%3Ccircle cx='122' cy='225' r='3'/%3E%3Ccircle cx='385' cy='292' r='3'/%3E%3Ccircle cx='250' cy='376' r='4'/%3E%3C/g%3E%3C/svg%3E");
   background-repeat: repeat;
-  background-size: 300px 300px;
+  background-size: 420px 420px;
   background-attachment: fixed;
 }
 
@@ -19,7 +19,7 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(134, 201, 251, 0.08);
   pointer-events: none;
   z-index: 0;
 }
