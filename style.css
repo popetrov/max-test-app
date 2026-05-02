@@ -29,6 +29,10 @@ body::before {
 .app {
   position: relative;
   z-index: 1;
+  max-width: 520px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 0 16px 24px;
 }
 
 .top-bar,
