@@ -289,3 +289,118 @@ body::after {
   font-weight: 800;
   box-shadow: 0 10px 26px rgba(15, 62, 105, 0.08);
 }
+
+.form-card {
+  margin-top: 24px;
+  padding: 24px 18px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 18px 45px rgba(37, 99, 235, 0.12);
+}
+
+.form-card h1 {
+  margin: 0 0 10px;
+  font-size: 28px;
+  line-height: 1.12;
+  font-weight: 850;
+  color: #102033;
+  text-align: center;
+}
+
+.form-card > p {
+  margin: 0 0 20px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #5b6b7c;
+  text-align: center;
+}
+
+.request-form {
+  display: grid;
+  gap: 14px;
+}
+
+.request-form label,
+.form-label {
+  display: grid;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #122033;
+}
+
+.request-form input,
+.request-form textarea,
+.request-form select {
+  width: 100%;
+  border: 1px solid rgba(32, 168, 245, 0.22);
+  border-radius: 18px;
+  padding: 15px 16px;
+  background: #f7fbff;
+  color: #122033;
+  font-size: 15px;
+  outline: none;
+}
+
+.request-form textarea {
+  min-height: 130px;
+  resize: vertical;
+}
+
+.request-form input:focus,
+.request-form textarea:focus,
+.request-form select:focus {
+  border-color: #20a8f5;
+  box-shadow: 0 0 0 3px rgba(32, 168, 245, 0.14);
+}
+
+.form-group {
+  display: grid;
+  gap: 9px;
+  padding: 14px;
+  border-radius: 22px;
+  background: #f7fbff;
+  border: 1px solid rgba(32, 168, 245, 0.18);
+}
+
+.checkbox-row {
+  display: flex !important;
+  grid-template-columns: none !important;
+  align-items: center;
+  gap: 10px !important;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: white;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+}
+
+.checkbox-row input {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  accent-color: #20a8f5;
+}
+
+.price-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.submit-button {
+  width: 100%;
+  margin-top: 8px;
+  border: none;
+  padding: 18px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #20a8f5, #1677ff);
+  color: white;
+  font-size: 17px;
+  font-weight: 900;
+  box-shadow: 0 14px 32px rgba(22, 119, 255, 0.28);
+}
+
+.submit-button:active {
+  transform: scale(0.98);
+}
