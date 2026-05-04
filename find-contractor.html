@@ -30,46 +30,46 @@
 
           <label>
             Заголовок заявки
-            <input type="text" placeholder="Например: Нужны монолитчики" required>
+            <input id="title" name="title" type="text" placeholder="Например: Нужны монолитчики" required>
           </label>
 
           <label>
             Подробности
-            <textarea placeholder="Опишите объемы, сроки, материалы, требования и важные детали" required></textarea>
+            <textarea id="description" name="description" placeholder="Опишите объемы, сроки, материалы, требования и важные детали"></textarea>
           </label>
 
           <label>
             Город
-            <input type="text" placeholder="Например: Москва" required>
+            <input id="city" name="city" type="text" placeholder="Например: Москва">
           </label>
 
           <div class="form-group">
             <div class="form-label">Кого ищете</div>
 
             <label class="checkbox-row">
-              <input type="checkbox">
+              <input type="checkbox" name="performers" value="Субподрядчик">
               <span>Субподрядчик</span>
             </label>
 
             <label class="checkbox-row">
-              <input type="checkbox">
+              <input type="checkbox" name="performers" value="Бригада">
               <span>Бригада</span>
             </label>
 
             <label class="checkbox-row">
-              <input type="checkbox">
+              <input type="checkbox" name="performers" value="Мастер">
               <span>Мастер</span>
             </label>
 
             <label class="checkbox-row">
-              <input type="checkbox">
+              <input type="checkbox" name="performers" value="Поставщик">
               <span>Поставщик</span>
             </label>
           </div>
 
           <label>
             Требуется СРО
-            <select>
+            <select id="sro" name="sro">
               <option>Не важно</option>
               <option>Да</option>
               <option>Нет</option>
@@ -78,7 +78,7 @@
 
           <label>
             Категория работ
-            <select required>
+            <select id="category" name="category">
               <option value="">Выберите категорию</option>
               <option>Аренда спецтехники</option>
               <option>Бетонные/монолитные работы</option>
@@ -119,18 +119,18 @@
           <div class="price-grid">
             <label>
               Цена от
-              <input type="number" placeholder="0">
+              <input id="priceFrom" name="priceFrom" type="number" placeholder="0">
             </label>
 
             <label>
               Цена до
-              <input type="number" placeholder="0">
+              <input id="priceTo" name="priceTo" type="number" placeholder="0">
             </label>
           </div>
 
           <label>
             Способ связи
-            <select>
+            <select id="contactType" name="contactType">
               <option>Телефон</option>
               <option>Email</option>
             </select>
@@ -138,12 +138,12 @@
 
           <label>
             Контакт
-            <input type="text" placeholder="Введите телефон или email" required>
+            <input id="contact" name="contact" type="text" placeholder="Введите телефон или email" required>
           </label>
 
           <label>
             Документы
-            <input type="file" multiple>
+            <input id="documents" name="documents" type="file" multiple>
           </label>
 
           <button type="submit" class="submit-button">

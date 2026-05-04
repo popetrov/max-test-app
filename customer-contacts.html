@@ -3,29 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Контакты заказчиков</title>
+  <title>Заявки на субподряд</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="app">
-    <header class="page-header">
-      <button class="back-btn" onclick="goHome()">←</button>
-      <div class="page-title">Контакты заказчиков</div>
-      <div class="header-spacer"></div>
-    </header>
+<div class="app">
+  <header class="page-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="page-title">Заявки на субподряд</div>
+    <div class="header-spacer"></div>
+  </header>
 
-    <main class="content">
-      <section class="hero-card">
-        <div class="max-badge">раздел</div>
-        <h1>Контакты заказчиков</h1>
-        <p>Раздел находится в разработке.</p>
-      </section>
+  <main class="content">
 
-      <button class="home-button" onclick="goHome()">На главную</button>
-    </main>
-  </div>
+    <section class="form-card">
+      <div class="max-badge">заявки</div>
+      <h1>Актуальные заявки</h1>
+      <p>
+        Здесь отображаются заявки, опубликованные через раздел “Найти исполнителя”.
+      </p>
 
-  <script src="script.js"></script>
+      <div class="filters-box">
+        <input id="requestSearch" type="text" placeholder="Поиск по заявкам" oninput="applyRequestFilters()">
+
+        <input id="requestCity" type="text" placeholder="Город или регион" oninput="applyRequestFilters()">
+
+        <select id="requestCategory" onchange="applyRequestFilters()">
+          <option value="">Все категории</option>
+          <option>Аренда спецтехники</option>
+          <option>Бетонные/монолитные работы</option>
+          <option>Вентиляция и кондиционирование</option>
+          <option>Высотные работы</option>
+          <option>Гидроизоляционные работы</option>
+          <option>Демонтажные работы</option>
+          <option>Дорожные и земляные работы</option>
+          <option>Каменные/кирпичные работы</option>
+          <option>Клининг</option>
+          <option>Кровельные работы</option>
+          <option>Малярные работы</option>
+          <option>Монтажные работы</option>
+          <option>Монтаж свай/фундаментов</option>
+          <option>Монтаж трубопроводов</option>
+          <option>Общестроительные работы</option>
+          <option>Отделочные работы</option>
+          <option>Поставки стройматериалов</option>
+          <option>Проектные работы</option>
+          <option>Работы по возведению зданий</option>
+          <option>Сварка металлоконструкций</option>
+          <option>Системы безопасности и связи</option>
+          <option>Системы водоснабжения</option>
+          <option>Стекольные работы</option>
+          <option>Столярные и плотницкие работы</option>
+          <option>Строительство прочих сооружений</option>
+          <option>Строительство трубопроводов</option>
+          <option>Теплоизоляционные работы</option>
+          <option>Транспортные услуги</option>
+          <option>Устройство полов</option>
+          <option>Обойные и плиточные работы</option>
+          <option>Фасадные работы</option>
+          <option>Штукатурные работы</option>
+          <option>Электромонтажные работы</option>
+        </select>
+
+        <button class="reset-button" onclick="resetRequestFilters()">Сбросить фильтры</button>
+      </div>
+    </section>
+
+    <section id="requestsList" class="requests-list">
+      <div class="empty-text">Загрузка заявок...</div>
+    </section>
+
+    <button class="home-button" onclick="goHome()">На главную</button>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
