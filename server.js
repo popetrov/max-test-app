@@ -130,6 +130,14 @@ app.post("/create-payment", async (req, res) => {
     const secretKey = process.env.YOOKASSA_SECRET_KEY;
     const returnUrl = process.env.PAYMENT_RETURN_URL;
 
+    console.log("YOOKASSA DEBUG:", {
+  shopId,
+  shopIdLength: shopId ? shopId.length : 0,
+  secretKeyPrefix: secretKey ? secretKey.slice(0, 5) : "NO_KEY",
+  secretKeyLength: secretKey ? secretKey.length : 0,
+  returnUrl
+});
+
     if (!shopId || !secretKey || !returnUrl) {
       return res.status(500).json({
         success: false,
