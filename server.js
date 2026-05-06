@@ -4,7 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const crypto = require("crypto");
-const db = require("./database");
+const pool = require("./database");
 
 const app = express();
 
@@ -39,13 +39,23 @@ app.post("/api/contractor-requests", (req, res) => {
 
   const sql = `
     INSERT INTO contractor_requests (
-      title, description, city, performers, sro, category,
-      price_from, price_to, contact_type, contact, created_at
+      title,
+      description,
+      city,
+      performers,
+      sro,
+      category,
+      price_from,
+      price_to,
+      contact_type,
+      contact,
+      created_at
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    RETURNING id
   `;
 
-  db.run(
+  pool.query(
     sql,
     [
       title,
@@ -59,21 +69,23 @@ app.post("/api/contractor-requests", (req, res) => {
       contactType || "",
       contact,
       createdAt
-    ],
-    function (error) {
-      if (error) {
-        console.error("Ошибка сохранения:", error.message);
-        return res.status(500).json({ success: false, message: "Ошибка при сохранении заявки" });
-      }
-
+    ]
+  )
+    .then((result) => {
       return res.json({
         success: true,
-        message: "Заявка успешно опубликована",
-        id: this.lastID
+        message: "Заявка успешно опубликована"
       });
-    }
-  );
-});
+    })
+    .catch((error) => {
+      console.error("Ошибка сохранения:", error.message);
+
+      return res.status(500).json({
+        success: false,
+        message: "Ошибка при сохранении заявки"
+      });
+    });
+  });
 
 app.get("/api/contractor-requests", (req, res) => {
   const sql = `
@@ -82,37 +94,44 @@ app.get("/api/contractor-requests", (req, res) => {
     ORDER BY id DESC
   `;
 
-  db.all(sql, [], (error, rows) => {
-    if (error) {
+  pool.query(sql)
+    .then((result) => {
+      const items = result.rows.map((row) => {
+        let performers = [];
+
+        try {
+          performers = JSON.parse(row.performers || "[]");
+        } catch {}
+
+        return {
+          id: row.id,
+          title: row.title,
+          description: row.description,
+          city: row.city,
+          performers,
+          sro: row.sro,
+          category: row.category,
+          priceFrom: row.price_from,
+          priceTo: row.price_to,
+          contactType: row.contact_type,
+          contact: row.contact,
+          createdAt: row.created_at
+        };
+      });
+
+      return res.json({
+        success: true,
+        items
+      });
+    })
+    .catch((error) => {
       console.error("Ошибка получения:", error.message);
-      return res.status(500).json({ success: false, message: "Ошибка при получении заявок" });
-    }
 
-    const items = rows.map((row) => {
-      let performers = [];
-
-      try {
-        performers = JSON.parse(row.performers || "[]");
-      } catch {}
-
-      return {
-        id: row.id,
-        title: row.title,
-        description: row.description,
-        city: row.city,
-        performers,
-        sro: row.sro,
-        category: row.category,
-        priceFrom: row.price_from,
-        priceTo: row.price_to,
-        contactType: row.contact_type,
-        contact: row.contact,
-        createdAt: row.created_at
-      };
+      return res.status(500).json({
+        success: false,
+        message: "Ошибка при получении заявок"
+      });
     });
-
-    return res.json({ success: true, items });
-  });
 });
 
 app.post("/create-payment", async (req, res) => {

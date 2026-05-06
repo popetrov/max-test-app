@@ -1,17 +1,16 @@
-const sqlite3 = require("sqlite3").verbose();
+const { Pool } = require("pg");
 
-const db = new sqlite3.Database("./stroypodryad.db", (error) => {
-  if (error) {
-    console.error("Ошибка подключения к SQLite:", error.message);
-  } else {
-    console.log("SQLite база подключена");
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
   }
 });
 
-db.serialize(() => {
-  db.run(`
+async function initDatabase() {
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS contractor_requests (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       title TEXT NOT NULL,
       description TEXT,
       city TEXT,
@@ -25,6 +24,12 @@ db.serialize(() => {
       created_at TEXT NOT NULL
     )
   `);
+
+  console.log("PostgreSQL база подключена и таблица готова");
+}
+
+initDatabase().catch((error) => {
+  console.error("Ошибка инициализации PostgreSQL:", error);
 });
 
-module.exports = db;
+module.exports = pool;
