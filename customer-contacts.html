@@ -78,6 +78,34 @@
 
   </main>
 </div>
+<div class="modal-overlay" id="subscriptionModal">
+  <div class="subscription-modal">
+    <button class="modal-close" onclick="closeSubscriptionModal()">×</button>
+
+    <div class="max-badge">подписка</div>
+
+    <h2>Оформите подписку</h2>
+
+    <p>
+      Чтобы получить контакты заказчиков и доступ к заявкам на субподряд,
+      необходимо оформить месячную подписку.
+    </p>
+
+    <div class="modal-price">800 ₽ / месяц</div>
+
+    <p class="modal-note">
+      После оплаты доступ к контактам будет активирован автоматически.
+    </p>
+
+    <button class="modal-pay-button" onclick="paySubscription()">
+      Оплатить
+    </button>
+
+    <button class="modal-secondary-button" onclick="closeSubscriptionModal()">
+      Закрыть
+    </button>
+  </div>
+</div>
 
 <script src="script.js"></script>
 </body>

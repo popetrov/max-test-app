@@ -119,9 +119,9 @@ function renderContractorRequests(items) {
             Контакты заказчика доступны после оплаты доступа.
           </div>
 
-          <button class="details-button" onclick="showContactsLocked()">
-            Показать контакты
-          </button>
+            <button class="details-button" onclick="openSubscriptionModal()">
+              Получить контакты
+            </button>
         </div>
 
         <button class="details-button" onclick="toggleRequestDetails(${item.id})">
@@ -247,6 +247,55 @@ async function startPayment() {
       body: JSON.stringify({
         amount: 1,
         description: "Доступ к контактам СТРОЙПОДРЯД"
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      alert(data.error || "Ошибка создания платежа");
+      return;
+    }
+
+    if (data.payment_url) {
+      window.location.href = data.payment_url;
+    } else {
+      alert("Не удалось получить ссылку оплаты");
+    }
+  } catch (error) {
+    console.error("Ошибка оплаты:", error);
+    alert("Ошибка подключения к серверу");
+  }
+}
+
+function openSubscriptionModal() {
+  const modal = document.getElementById("subscriptionModal");
+  if (modal) {
+    modal.classList.add("open");
+  }
+}
+
+function closeSubscriptionModal() {
+  const modal = document.getElementById("subscriptionModal");
+  if (modal) {
+    modal.classList.remove("open");
+  }
+}
+
+function paySubscription() {
+  startPayment();
+}
+
+async function startPayment() {
+  try {
+    const response = await fetch("/create-payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        amount: 800,
+        description: "Месячная подписка СТРОЙПОДРЯД в МАКС"
       })
     });
 

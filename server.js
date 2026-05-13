@@ -213,6 +213,39 @@ app.post("/create-payment", async (req, res) => {
   }
 });
 
+function notifyAdminAboutPayment(paymentData) {
+  console.log("Новая оплата подписки:", paymentData);
+
+  // Здесь будет отправка уведомления в MAX после подключения API/бота MAX
+}
+
+app.post("/api/subscription-paid", (req, res) => {
+  const {
+    userId,
+    userName,
+    amount,
+    period,
+    paymentId
+  } = req.body;
+
+  const paymentData = {
+    userId: userId || "unknown",
+    userName: userName || "unknown",
+    amount: amount || 800,
+    period: period || "1 месяц",
+    paymentId: paymentId || "unknown",
+    status: "paid",
+    createdAt: new Date().toISOString()
+  };
+
+  notifyAdminAboutPayment(paymentData);
+
+  return res.json({
+    success: true,
+    message: "Оплата подписки зафиксирована"
+  });
+});
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
