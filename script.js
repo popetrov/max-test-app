@@ -283,7 +283,7 @@ function closeSubscriptionModal() {
 }
 
 function paySubscription() {
-  startPayment();
+  window.location.href = "/pay-subscription";
 }
 
 async function startPayment() {

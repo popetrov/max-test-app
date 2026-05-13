@@ -254,6 +254,54 @@ app.post("/api/subscription-paid", (req, res) => {
   });
 });
 
+app.get("/pay-subscription", async (req, res) => {
+  try {
+    const shopId = (process.env.YOOKASSA_SHOP_ID || "").trim();
+    const secretKey = (process.env.YOOKASSA_SECRET_KEY || "").trim();
+    const returnUrl = (process.env.PAYMENT_RETURN_URL || "").trim();
+
+    if (!shopId || !secretKey || !returnUrl) {
+      return res.status(500).send("Не настроены переменные ЮKassa");
+    }
+
+    const auth = Buffer.from(`${shopId}:${secretKey}`).toString("base64");
+
+    const response = await fetch("https://api.yookassa.ru/v3/payments", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Basic ${auth}`,
+        "Idempotence-Key": crypto.randomUUID()
+      },
+      body: JSON.stringify({
+        amount: {
+          value: "800.00",
+          currency: "RUB"
+        },
+        capture: true,
+        confirmation: {
+          type: "redirect",
+          return_url: returnUrl
+        },
+        description: "Подписка СТРОЙПОДРЯД в МАКС на 1 месяц"
+      })
+    });
+
+    const payment = await response.json();
+
+    if (!response.ok || !payment.confirmation?.confirmation_url) {
+      console.error("Ошибка ЮKassa:", payment);
+      return res.status(500).send("Не удалось создать платеж");
+    }
+
+    return res.redirect(payment.confirmation.confirmation_url);
+
+  } catch (error) {
+    console.error("Ошибка оплаты:", error);
+    return res.status(500).send("Ошибка создания платежа");
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
