@@ -287,6 +287,14 @@ function paySubscription() {
 }
 
 async function startPayment() {
+  let paymentWindow = null;
+
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  if (!isMobile) {
+    paymentWindow = window.open("about:blank", "_blank");
+  }
+
   try {
     const response = await fetch("/api/create-payment", {
       method: "POST",
@@ -301,16 +309,21 @@ async function startPayment() {
 
     const data = await response.json();
 
-    console.log("Payment response:", data);
-
     if (!response.ok || !data.success || !data.paymentUrl) {
+      if (paymentWindow) paymentWindow.close();
       alert(data.error || "Не удалось создать платеж");
       return;
     }
 
-    window.location.href = data.paymentUrl;
+    if (paymentWindow) {
+      paymentWindow.location.href = data.paymentUrl;
+    } else {
+      window.location.href = data.paymentUrl;
+    }
 
   } catch (error) {
+    if (paymentWindow) paymentWindow.close();
+
     console.error("Payment error:", error);
     alert("Ошибка при открытии оплаты");
   }
