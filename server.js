@@ -87,54 +87,7 @@ app.post("/api/contractor-requests", (req, res) => {
     });
   });
 
-app.get("/api/contractor-requests", (req, res) => {
-  const sql = `
-    SELECT *
-    FROM contractor_requests
-    ORDER BY id DESC
-  `;
-
-  pool.query(sql)
-    .then((result) => {
-      const items = result.rows.map((row) => {
-        let performers = [];
-
-        try {
-          performers = JSON.parse(row.performers || "[]");
-        } catch {}
-
-        return {
-          id: row.id,
-          title: row.title,
-          description: row.description,
-          city: row.city,
-          performers,
-          sro: row.sro,
-          category: row.category,
-          priceFrom: row.price_from,
-          priceTo: row.price_to,
-          contactType: row.contact_type,
-          contact: row.contact,
-          createdAt: row.created_at
-        };
-      });
-
-      return res.json({
-        success: true,
-        items
-      });
-    })
-    .catch((error) => {
-      console.error("Ошибка получения:", error.message);
-
-      return res.status(500).json({
-        success: false,
-        message: "Ошибка при получении заявок"
-      });
-    });
-});
-
-app.post("/create-payment", async (req, res) => {
+app.post("/api/create-payment", async (req, res) => {
   try {
     const { amount, description } = req.body;
 
@@ -145,17 +98,9 @@ app.post("/create-payment", async (req, res) => {
       });
     }
 
-    const shopId = process.env.YOOKASSA_SHOP_ID;
-    const secretKey = process.env.YOOKASSA_SECRET_KEY;
-    const returnUrl = process.env.PAYMENT_RETURN_URL;
-
-    console.log("YOOKASSA DEBUG:", {
-  shopId,
-  shopIdLength: shopId ? shopId.length : 0,
-  secretKeyPrefix: secretKey ? secretKey.slice(0, 5) : "NO_KEY",
-  secretKeyLength: secretKey ? secretKey.length : 0,
-  returnUrl
-});
+    const shopId = (process.env.YOOKASSA_SHOP_ID || "").trim();
+    const secretKey = (process.env.YOOKASSA_SECRET_KEY || "").trim();
+    const returnUrl = (process.env.PAYMENT_RETURN_URL || "").trim();
 
     if (!shopId || !secretKey || !returnUrl) {
       return res.status(500).json({
@@ -200,7 +145,7 @@ app.post("/create-payment", async (req, res) => {
 
     return res.json({
       success: true,
-      payment_url: payment.confirmation.confirmation_url
+      paymentUrl: payment.confirmation.confirmation_url
     });
 
   } catch (error) {

@@ -288,31 +288,30 @@ function paySubscription() {
 
 async function startPayment() {
   try {
-    const response = await fetch("/create-payment", {
+    const response = await fetch("/api/create-payment", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
         amount: 800,
-        description: "Месячная подписка СТРОЙПОДРЯД в МАКС"
+        description: "Подписка СТРОЙПОДРЯД в МАКС на 1 месяц"
       })
     });
 
     const data = await response.json();
 
-    if (!response.ok || !data.success) {
-      alert(data.error || "Ошибка создания платежа");
+    console.log("Payment response:", data);
+
+    if (!response.ok || !data.success || !data.paymentUrl) {
+      alert(data.error || "Не удалось создать платеж");
       return;
     }
 
-    if (data.payment_url) {
-      window.location.href = data.payment_url;
-    } else {
-      alert("Не удалось получить ссылку оплаты");
-    }
+    window.location.href = data.paymentUrl;
+
   } catch (error) {
-    console.error("Ошибка оплаты:", error);
-    alert("Ошибка подключения к серверу");
+    console.error("Payment error:", error);
+    alert("Ошибка при открытии оплаты");
   }
 }
