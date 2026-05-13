@@ -12,6 +12,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
+/*
+  СОЗДАНИЕ ЗАЯВКИ
+*/
 app.post("/api/contractor-requests", (req, res) => {
   const {
     title,
@@ -27,11 +30,17 @@ app.post("/api/contractor-requests", (req, res) => {
   } = req.body;
 
   if (!title || !title.trim()) {
-    return res.status(400).json({ success: false, message: "Заполните заголовок заявки" });
+    return res.status(400).json({
+      success: false,
+      message: "Заполните заголовок заявки"
+    });
   }
 
   if (!contact || !contact.trim()) {
-    return res.status(400).json({ success: false, message: "Заполните контакт" });
+    return res.status(400).json({
+      success: false,
+      message: "Заполните контакт"
+    });
   }
 
   const createdAt = new Date().toISOString();
@@ -55,26 +64,24 @@ app.post("/api/contractor-requests", (req, res) => {
     RETURNING id
   `;
 
-  pool.query(
-    sql,
-    [
-      title,
-      description || "",
-      city || "",
-      performersJson,
-      sro || "",
-      category || "",
-      priceFrom || null,
-      priceTo || null,
-      contactType || "",
-      contact,
-      createdAt
-    ]
-  )
+  pool.query(sql, [
+    title,
+    description || "",
+    city || "",
+    performersJson,
+    sro || "",
+    category || "",
+    priceFrom || null,
+    priceTo || null,
+    contactType || "",
+    contact,
+    createdAt
+  ])
     .then((result) => {
       return res.json({
         success: true,
-        message: "Заявка успешно опубликована"
+        message: "Заявка успешно опубликована",
+        id: result.rows[0].id
       });
     })
     .catch((error) => {
@@ -85,8 +92,61 @@ app.post("/api/contractor-requests", (req, res) => {
         message: "Ошибка при сохранении заявки"
       });
     });
-  });
+});
 
+/*
+  ПОЛУЧЕНИЕ ВСЕХ ЗАЯВОК
+*/
+app.get("/api/contractor-requests", (req, res) => {
+  const sql = `
+    SELECT *
+    FROM contractor_requests
+    ORDER BY id DESC
+  `;
+
+  pool.query(sql)
+    .then((result) => {
+      const items = result.rows.map((row) => {
+        let performers = [];
+
+        try {
+          performers = JSON.parse(row.performers || "[]");
+        } catch {}
+
+        return {
+          id: row.id,
+          title: row.title,
+          description: row.description,
+          city: row.city,
+          performers,
+          sro: row.sro,
+          category: row.category,
+          priceFrom: row.price_from,
+          priceTo: row.price_to,
+          contactType: row.contact_type,
+          contact: row.contact,
+          createdAt: row.created_at
+        };
+      });
+
+      return res.json({
+        success: true,
+        items
+      });
+    })
+    .catch((error) => {
+      console.error("Ошибка получения:", error.message);
+
+      return res.status(500).json({
+        success: false,
+        message: "Ошибка при получении заявок"
+      });
+    });
+});
+
+/*
+  СОЗДАНИЕ ПЛАТЕЖА ЮKASSA
+*/
 app.post("/api/create-payment", async (req, res) => {
   try {
     const { amount, description } = req.body;
@@ -158,6 +218,9 @@ app.post("/api/create-payment", async (req, res) => {
   }
 });
 
+/*
+  ФИКСАЦИЯ ОПЛАТЫ ПОДПИСКИ
+*/
 function notifyAdminAboutPayment(paymentData) {
   console.log("Новая оплата подписки:", paymentData);
 
