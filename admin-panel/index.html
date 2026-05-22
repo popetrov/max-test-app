@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Админ-панель</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+  <header class="page-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="page-title">Админ-панель</div>
+    <div class="header-spacer"></div>
+  </header>
+
+  <main class="content" id="adminRoot">
+    <section class="hero-card section-hero section-card-violet">
+      <div class="section-hero-top">
+        <div class="section-icon">🛡️</div>
+        <div>
+          <div class="section-mini-title">только админ</div>
+          <h1 class="section-hero-title">Управление платформой</h1>
+        </div>
+      </div>
+      <p class="section-description">Модерация, пользователи, тарифы, партнерские заявки, автопостинг MAX и логи.</p>
+      <div class="section-action-row">
+        <span class="inline-status" id="adminRoleBadge">Админ</span>
+        <span class="inline-status">Демо-режим</span>
+      </div>
+    </section>
+
+    <section class="admin-card">
+      <div class="admin-menu">
+        <button class="active" data-tab="moderation">🛡️ Модерация</button>
+        <button data-tab="users">👥 Пользователи</button>
+        <button data-tab="tariffs">💰 Тарифы</button>
+        <button data-tab="partners">🤝 Партнёры</button>
+        <button data-tab="max">📣 MAX</button>
+        <button data-tab="logs">📊 Логи</button>
+        <button data-tab="settings">⚙️ Настройки</button>
+      </div>
+
+      <div class="admin-tabs">
+        <div class="admin-tab active" id="tab-moderation">
+          <h2>Очередь модерации</h2>
+          <p>Сюда падают заявки, презентации услуг и записи черного списка.</p>
+          <div class="admin-list" id="moderationList"></div>
+        </div>
+
+        <div class="admin-tab" id="tab-users">
+          <h2>Пользователи</h2>
+          <p>Обычные пользователи, тарифы и роли.</p>
+          <div class="admin-list" id="usersList"></div>
+        </div>
+
+        <div class="admin-tab" id="tab-tariffs">
+          <h2>Тарифы</h2>
+          <div class="feature-grid">
+            <div class="feature-card"><b>FREE</b><span>Просмотр открытых разделов.</span></div>
+            <div class="feature-card"><b>Презентация</b><span>Публикация компании.</span></div>
+            <div class="feature-card"><b>Заказы</b><span>Контакты заказчиков, файлы, чат.</span></div>
+            <div class="feature-card"><b>PRO</b><span>Тендеры, проверки, ЛПР.</span></div>
+          </div>
+        </div>
+
+        <div class="admin-tab" id="tab-partners">
+          <h2>Партнерские заявки</h2>
+          <div class="admin-list" id="partnersList"></div>
+        </div>
+
+        <div class="admin-tab" id="tab-max">
+          <h2>Автопостинг MAX</h2>
+          <p>Очередь заявок для отправки в MAX-чаты каждые 3 часа. Контакты заказчика не публикуются.</p>
+          <div class="admin-list" id="maxList"></div>
+        </div>
+
+        <div class="admin-tab" id="tab-logs">
+          <h2>Логи</h2>
+          <p>Системные действия видит только админ.</p>
+          <div class="admin-list" id="logsList"></div>
+        </div>
+
+        <div class="admin-tab" id="tab-settings">
+          <h2>Настройки</h2>
+          <div class="feature-grid">
+            <div class="feature-card"><b>Роли</b><span>guest, user, paid_user, moderator, admin, owner.</span></div>
+            <div class="feature-card"><b>Интеграции</b><span>Cheko, Saby, ЕИС, MAX Bot API.</span></div>
+            <div class="feature-card"><b>Файлы</b><span>Лимит 5 МБ на файл.</span></div>
+            <div class="feature-card"><b>Безопасность</b><span>В продакшене права проверяются backend.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <button class="home-button" onclick="goHome()">На главную</button>
+  </main>
+</div>
+
+<script src="/app-core.js"></script>
+<script src="/script.js"></script>
+<script>
+function ensureDemoData(){
+  if(!localStorage.getItem('sp_moderation_queue')){
+    localStorage.setItem('sp_moderation_queue', JSON.stringify([
+      {id:1001,type:'Черный список',status:'На проверке',author:'Иван',createdAt:new Date().toISOString(),payload:{title:'ООО Проблемный Подряд',inn:'7700000000',city:'Москва',description:'Спор по оплате и срокам.',files:'2 файла'}},
+      {id:1002,type:'Презентация услуг',status:'На проверке',author:'Алексей',createdAt:new Date().toISOString(),payload:{title:'Бригада монолитчиков',inn:'7711111111',city:'Москва',description:'Монолитные работы, армирование, опалубка.',files:'3 фото'}},
+      {id:1003,type:'Заявка на субподряд',status:'На проверке',author:'Сергей',createdAt:new Date().toISOString(),payload:{title:'Нужны электрики',city:'СПб',description:'Коммерческий объект, старт на следующей неделе.',files:'1 ТЗ'}}
+    ]));
+  }
+  if(!localStorage.getItem('sp_activity_logs')){
+    localStorage.setItem('sp_activity_logs', JSON.stringify([
+      {id:1,action:'register_user',section:'auth',user:'Иван',createdAt:new Date().toISOString(),data:{role:'user'}},
+      {id:2,action:'search',section:'blacklist',user:'Гость',createdAt:new Date().toISOString(),data:{q:'7700000000'}},
+      {id:3,action:'open_card',section:'services',user:'Иван',createdAt:new Date().toISOString(),data:{company:'МонолитСтрой'}}
+    ]));
+  }
+  if(!localStorage.getItem('sp_max_repost_queue')){
+    localStorage.setItem('sp_max_repost_queue', JSON.stringify([
+      {id:1,status:'Ожидает отправки',createdAt:new Date().toISOString(),payload:{title:'Ищу бригаду монолитчиков',city:'Москва',description:'Объем 5000 м²'}}
+    ]));
+  }
+}
+
+function adminAccessGuard(){
+  const u = SP.user();
+  if(!['admin','owner'].includes(u.role)){
+    document.getElementById('adminRoot').innerHTML = `
+      <section class="hero-card section-hero section-card-red">
+        <div class="section-hero-top"><div class="section-icon">⛔</div><div><div class="section-mini-title">доступ закрыт</div><h1 class="section-hero-title">Только для админа</h1></div></div>
+        <p class="section-description">Войдите как админ с главной страницы. Тест-код: admin2026</p>
+        <button class="home-button" onclick="goHome()">На главную</button>
+      </section>`;
+    return false;
+  }
+  document.getElementById('adminRoleBadge').textContent = 'Роль: ' + u.role;
+  return true;
+}
+
+function switchAdminTab(tab){
+  document.querySelectorAll('.admin-menu button').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+  const target = document.getElementById('tab-'+tab);
+  if(target) target.classList.add('active');
+  renderAdmin();
+}
+
+function getArr(key){ try{return JSON.parse(localStorage.getItem(key)||'[]')}catch(e){return[]} }
+function setArr(key,val){ localStorage.setItem(key,JSON.stringify(val)); }
+
+function renderModeration(){
+  const box = document.getElementById('moderationList');
+  if(!box) return;
+  const list = getArr('sp_moderation_queue');
+  box.innerHTML = list.length ? list.map(item=>`
+    <div class="moderation-item">
+      <div><span class="status-pill warn">${item.status}</span> <span class="status-pill">${item.type}</span></div>
+      <h3>${escapeHtml(item.payload?.title || 'Без названия')}</h3>
+      <p>Автор: ${escapeHtml(item.author || '—')} · ИНН: ${escapeHtml(item.payload?.inn || '—')} · Город: ${escapeHtml(item.payload?.city || '—')}</p>
+      <p>${escapeHtml(item.payload?.description || '')}</p>
+      <p class="small-muted">Файлы: ${escapeHtml(item.payload?.files || 'нет')}</p>
+      <div class="card-actions">
+        <button class="admin-btn ok" onclick="setModerationStatus(${item.id},'Одобрено')">Одобрить</button>
+        <button class="admin-btn bad" onclick="setModerationStatus(${item.id},'Отклонено')">Отклонить</button>
+        <button class="admin-btn" onclick="setModerationStatus(${item.id},'На доработке')">На доработку</button>
+      </div>
+    </div>`).join('') : '<div class="soft-card">Очередь пустая.</div>';
+}
+function setModerationStatus(id,status){
+  const list = getArr('sp_moderation_queue').map(x=>x.id==id?{...x,status}:x);
+  setArr('sp_moderation_queue',list);
+  renderModeration();
+}
+
+function renderUsers(){
+  const box = document.getElementById('usersList');
+  if(!box) return;
+  const accounts = getArr('sp_demo_accounts');
+  const current = SP.user();
+  const list = [...accounts, current.email==='admin@stroypodryad.local'?current:null].filter(Boolean);
+  box.innerHTML = list.length ? list.map(u=>`
+    <div class="soft-card">
+      <h3>${escapeHtml(u.displayName || u.name || 'Пользователь')}</h3>
+      <p>${escapeHtml(u.email || 'без почты')} · ${escapeHtml(u.phone || 'без телефона')}</p>
+      <span class="status-pill">${escapeHtml(u.role || 'user')}</span>
+      <span class="status-pill pro">${escapeHtml(u.plan || 'free')}</span>
+    </div>`).join('') : '<div class="soft-card">Пока нет пользователей.</div>';
+}
+
+function renderPartners(){
+  const box = document.getElementById('partnersList');
+  if(!box) return;
+  const list = getArr('sp_partner_requests');
+  box.innerHTML = list.length ? list.map(x=>`
+    <div class="soft-card"><h3>${escapeHtml(x.section || 'Заявка')}</h3><p>${escapeHtml(JSON.stringify(x.payload || {}))}</p><span class="status-pill warn">${escapeHtml(x.status || 'Новая')}</span></div>
+  `).join('') : '<div class="soft-card">Партнерских заявок пока нет.</div>';
+}
+
+function renderMax(){
+  const box = document.getElementById('maxList');
+  if(!box) return;
+  const list = getArr('sp_max_repost_queue');
+  box.innerHTML = list.length ? list.map(x=>`
+    <div class="soft-card"><h3>${escapeHtml(x.payload?.title || 'Заявка')}</h3><p>${escapeHtml(x.payload?.city || 'Город не указан')}</p><span class="status-pill warn">${escapeHtml(x.status || 'Ожидает')}</span></div>
+  `).join('') : '<div class="soft-card">Очередь MAX пустая.</div>';
+}
+
+function renderLogs(){
+  const box = document.getElementById('logsList');
+  if(!box) return;
+  const list = getArr('sp_activity_logs');
+  box.innerHTML = list.length ? list.slice(0,50).map(x=>`
+    <div class="soft-card"><b>${escapeHtml(x.action || 'action')}</b> · ${escapeHtml(x.section || 'section')}<p>${escapeHtml(x.user || '—')} · ${new Date(x.createdAt || Date.now()).toLocaleString('ru-RU')}</p><p>${escapeHtml(JSON.stringify(x.data || {}))}</p></div>
+  `).join('') : '<div class="soft-card">Логов пока нет.</div>';
+}
+
+function renderAdmin(){
+  renderModeration();
+  renderUsers();
+  renderPartners();
+  renderMax();
+  renderLogs();
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  ensureDemoData();
+  if(!adminAccessGuard()) return;
+  document.querySelectorAll('.admin-menu button').forEach(btn=>btn.addEventListener('click',()=>switchAdminTab(btn.dataset.tab)));
+  renderAdmin();
+});
+</script>
+<script src="/old-bugs-fix.js"></script>\n<script src="/registration-overlay-fix.js"></script>
+<script src="/human-logs-fix.js"></script>
+</body>
+</html>

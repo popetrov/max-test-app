@@ -29,7 +29,7 @@
       <div class="feature-card"><b>FREE</b><span>Просмотр презентаций, контактов исполнителей и черного списка.</span><button class="reset-button" onclick="demoPlan('free')">Выбрать</button></div>
       <div class="feature-card"><b>Презентация — 500 ₽/мес</b><span>Размещение карточки компании и поднятие публикации.</span><button class="submit-button" onclick="demoPlan('presentation')">Тест включить</button></div>
       <div class="feature-card"><b>Заказы</b><span>Контакты заказчиков, файлы заявок, закрытый чат.</span><button class="submit-button" onclick="demoPlan('orders')">Тест включить</button></div>
-      <div class="feature-card"><b onclick="setTariffPlan('pro')">PRO</b><span>Тендеры, победители, ЛПР, проверки, выгрузки.</span><button class="submit-button" onclick="demoPlan('pro')">Тест включить</button></div>
+      <div class="feature-card"><b>PRO</b><span>Тендеры, победители, ЛПР, проверки, выгрузки.</span><button class="submit-button" onclick="demoPlan('pro')">Тест включить</button></div>
     </section>
 
     <button class="home-button" onclick="goHome()">На главную</button>
@@ -40,25 +40,7 @@
 <script>
 function demoPlan(plan){ SP.saveUser({plan, role: SP.user().role === 'guest' ? 'user' : SP.user().role}); alert('Демо-тариф включен: '+plan); }
 </script>
-<script src="/old-bugs-fix.js"></script>\n
-<script>
-function setTariffPlan(plan){
-  try{
-    const u = JSON.parse(localStorage.getItem('sp_user') || '{}');
-    if(!u.role || u.role === 'guest'){
-      alert('Сначала зарегистрируйтесь');
-      location.href='/registration/';
-      return;
-    }
-    u.plan = plan;
-    localStorage.setItem('sp_user', JSON.stringify(u));
-    alert(plan === 'orders' ? 'Тариф «Заказы» включен. Закрытый чат доступен.' : 'Тариф включен.');
-    if(plan === 'orders' || plan === 'pro') location.href='/chat.html';
-    else location.href='/profile/';
-  }catch(e){ alert('Ошибка сохранения тарифа'); }
-}
-</script>
-<script src="/registration-overlay-fix.js"></script>
+<script src="/old-bugs-fix.js"></script>\n<script src="/registration-overlay-fix.js"></script>
 <script src="/human-logs-fix.js"></script>
 </body>
 </html>

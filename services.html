@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Презентация услуг</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+  <header class="page-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="page-title">Презентация услуг</div>
+    <div class="header-spacer"></div>
+  </header>
+
+  <main class="content">
+    <section class="form-card section-hero section-card-green">
+      <div class="section-hero-top">
+        <div class="section-icon">🏢</div>
+        <div>
+          <div class="section-mini-title">каталог</div>
+          <h1 class="section-hero-title">Презентация услуг</h1>
+        </div>
+      </div>
+      <p class="section-description">Гости видят карточки и контакты. Публикация компании — по тарифу «Презентация» и через модерацию.</p>
+      <div class="section-action-row"><span class="inline-status">Контакты открыты</span><span class="inline-status">Модерация включена</span></div>
+
+      <div class="filters-box">
+        <input id="companySearch" type="text" placeholder="Поиск: ИНН, компания, монолит, Москва" oninput="applyCompanyFilters()">
+        <input id="companyCity" type="text" placeholder="Город или регион" oninput="applyCompanyFilters()">
+        <select id="companyCategory" onchange="applyCompanyFilters()">
+          <option value="">Все категории</option><option>Монолит</option><option>Электромонтаж</option><option>Отделка</option><option>Фасады</option><option>Кровля</option><option>Сантехника</option><option>Вентиляция</option><option>Проектирование</option><option>Поставка материалов</option><option>Аренда техники</option>
+        </select>
+        <button class="reset-button" onclick="resetCompanyFilters()">Сбросить фильтры</button>
+      </div>
+      <button class="submit-button" onclick="togglePublishForm()">Разместить свою компанию</button>
+    </section>
+
+    <section class="form-card" id="publishCompanyForm" style="display:none">
+      <h2>Новая презентация компании</h2>
+      <p class="small-muted">После отправки карточка попадёт в админ-панель на модерацию.</p>
+      <form onsubmit="submitCompany(event)">
+        <div class="form-row">
+          <div><label>Название компании *</label><input name="title" required></div>
+          <div><label>ИНН *</label><input name="inn" required></div>
+        </div>
+        <div class="form-row">
+          <div><label>Город *</label><input name="city" required></div>
+          <div><label>Категория *</label><input name="category" required></div>
+        </div>
+        <label>Телефон *</label><input name="phone" required>
+        <label>Описание услуг</label><textarea name="description"></textarea>
+        <label>Файлы / фото / карта компании</label><input id="companyFiles" type="file" multiple accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx"><div class="file-note">До 5 файлов, каждый до 5 МБ. Можно прикрепить карту компании, фото, PDF, сертификаты.</div>
+        <button class="submit-button">Отправить на модерацию</button>
+      </form>
+    </section>
+
+    <section id="companiesList" class="presentation-list"></section>
+    <button class="home-button" onclick="goHome()">На главную</button>
+  </main>
+</div>
+
+<div class="modal-overlay" id="subscriptionModal">
+  <div class="subscription-modal">
+    <button class="modal-close" onclick="closeSubscriptionModal()">×</button>
+    <div class="max-badge">тариф</div>
+    <h2>Нужен тариф</h2>
+    <p data-paywall-text>Публикация компании доступна по тарифу «Презентация».</p>
+    <div class="modal-price">от 500 ₽ / месяц</div>
+    <button class="modal-pay-button" onclick="goToPage('/subscription')">Посмотреть тарифы</button>
+    <button class="modal-secondary-button" onclick="closeSubscriptionModal()">Закрыть</button>
+  </div>
+</div>
+
+<script src="/app-core.js"></script>
+<script src="/script.js"></script>
+<script>
+const companies = [
+  {id:'company-1', name:'МонолитСтрой Групп', city:'Москва', category:'Монолит', inn:'7700000001', views:284, phone:'+7 900 111-22-33', tg:'@monolit_stroy', description:'Монолитные работы, бетон, армирование, опалубка. Работаем с объектами от частных заказчиков и генподрядчиков.'},
+  {id:'company-2', name:'ЭлектроМонтаж 24', city:'Санкт-Петербург', category:'Электромонтаж', inn:'7800000002', views:197, phone:'+7 900 222-33-44', tg:'@electro_24', description:'Электромонтажные работы, слаботочные сети, освещение, щитовые, пусконаладка.'},
+  {id:'company-3', name:'ФасадПрофи', city:'Казань', category:'Фасады', inn:'1600000003', views:143, phone:'+7 900 333-44-55', tg:'@fasad_profi', description:'Фасадные работы, мокрый фасад, вентфасады, утепление, высотные работы.'},
+  {id:'company-4', name:'Отделка Регион', city:'Краснодар', category:'Отделка', inn:'2300000004', views:321, phone:'+7 900 444-55-66', tg:'@otdelka_region', description:'Черновая и чистовая отделка, плитка, штукатурка, малярные работы.'}
+];
+
+function togglePublishForm(){
+  if(!SP.requireAccess('publish_presentation','Размещение компании доступно по тарифу «Презентация».')) return;
+  const box = document.getElementById('publishCompanyForm');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+function submitCompany(e){
+  e.preventDefault();
+  const f = e.target;
+  const files = [...document.getElementById('companyFiles').files];
+  if(files.length > 5){ alert('Можно прикрепить максимум 5 файлов'); return; }
+  if(files.some(file => file.size > 5 * 1024 * 1024)){ alert('Каждый файл должен быть до 5 МБ'); return; }
+  SP.queueModeration('Презентация услуг', {
+    title:f.title.value.trim(), inn:f.inn.value.trim(), city:f.city.value.trim(), category:f.category.value.trim(), phone:f.phone.value.trim(), description:f.description.value.trim(), files: files.length ? files.map(f=>f.name).join(', ') : 'нет файлов'
+  });
+  alert('Карточка отправлена на модерацию.');
+  e.target.reset();
+  document.getElementById('publishCompanyForm').style.display='none';
+}
+function renderCompanies(items){
+  const list = document.getElementById('companiesList');
+  if(!items.length){ list.innerHTML='<div class="empty-text">Компании не найдены</div>'; return; }
+  list.innerHTML = items.map(item => `
+    <article class="company-card" onclick="SP.log('open_card','services',{inn:'${item.inn}',name:'${item.name}'})">
+      <div class="company-top">
+        <div class="company-logo">${item.name.slice(0,1)}</div>
+        <div>
+          <h2>${escapeHtml(item.name)}</h2>
+          <div class="company-tags">
+            <span>${escapeHtml(item.city)}</span><span>${escapeHtml(item.category)}</span><span data-view-id="${item.id}" data-view-base="${item.views}">👁 ${item.views} просмотров</span>
+          </div>
+        </div>
+      </div>
+      <p class="company-description">${escapeHtml(item.description)}</p>
+      <div class="company-info"><div><strong>ИНН:</strong> ${escapeHtml(item.inn)}</div><div><strong>Контакты:</strong> открыты всем</div></div>
+      <div class="contact-buttons">
+        <a class="contact-button primary-contact" href="tel:${item.phone.replaceAll(' ','')}">Позвонить</a>
+        <a class="contact-button" href="https://t.me/${item.tg.replace('@','')}">Telegram</a>
+      </div>
+    </article>`).join('');
+  SP.startSoftViewGrowth();
+}
+function applyCompanyFilters(){
+  const search = document.getElementById('companySearch').value.toLowerCase().trim();
+  const city = document.getElementById('companyCity').value.toLowerCase().trim();
+  const category = document.getElementById('companyCategory').value;
+  SP.log('search','services',{search,city,category});
+  renderCompanies(companies.filter(item=>{
+    const text = `${item.name} ${item.city} ${item.category} ${item.description} ${item.inn}`.toLowerCase();
+    return (!search || text.includes(search)) && (!city || item.city.toLowerCase().includes(city)) && (!category || item.category===category);
+  }));
+}
+function resetCompanyFilters(){ companySearch.value=''; companyCity.value=''; companyCategory.value=''; renderCompanies(companies); }
+window.addEventListener('DOMContentLoaded',()=>renderCompanies(companies));
+</script>
+<script src="/old-bugs-fix.js"></script>\n<script src="/registration-overlay-fix.js"></script>
+<script src="/human-logs-fix.js"></script>
+</body>
+</html>

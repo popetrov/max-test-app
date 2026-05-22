@@ -1,0 +1,20 @@
+Проверка этой версии:
+
+1. npm install
+2. npm start
+3. открыть http://localhost:3000
+
+Проверить:
+- http://localhost:3000/profile
+- http://localhost:3000/profile.html
+- http://localhost:3000/registration
+- http://localhost:3000/admin
+- http://localhost:3000/blacklist
+- http://localhost:3000/counterparty
+
+CSS/JS подключены абсолютными путями:
+/style.css
+/app-core.js
+/script.js
+
+Фон не менялся.

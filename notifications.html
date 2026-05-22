@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Уведомления</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+  <header class="page-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="page-title">Уведомления</div>
+    <div class="header-spacer"></div>
+  </header>
+
+  <main class="content">
+    <section class="hero-card section-hero section-card-violet">
+      <div class="section-hero-top">
+        <div class="section-icon">🔔</div>
+        <div>
+          <div class="section-mini-title">система</div>
+          <h1 class="section-hero-title">Уведомления</h1>
+        </div>
+      </div>
+      <p class="section-description">Новые заявки, сообщения, ответы, статусы оплаты и важные события приложения будут собраны в одном месте.</p>
+      <div class="section-action-row">
+        <span class="inline-status">В разработке</span>
+        <span class="inline-status">Фундамент заложен</span>
+      </div>
+    </section>
+
+    <section class="feature-grid">
+        <div class="feature-card"><b>Новые заявки</b><span>Оповещения о подходящих заказах и откликах.</span></div>
+        <div class="feature-card"><b>Чат</b><span>Сообщения и ответы из закрытого чата.</span></div>
+        <div class="feature-card"><b>Система</b><span>Оплата, модерация, подписки и важные изменения.</span></div>
+    </section>
+
+    <section class="soon-list">
+      <div class="soon-item">Пока пользователь видит аккуратную страницу в едином стиле, а не пустой экран.</div>
+      <div class="soon-item">Позже сюда можно подключить форму, тариф, API, логи действий и админку.</div>
+    </section>
+
+    <button class="home-button" onclick="goHome()">На главную</button>
+  </main>
+</div>
+<script src="/app-core.js"></script>
+<script src="/script.js"></script>
+<script src="/old-bugs-fix.js"></script>\n<script src="/registration-overlay-fix.js"></script>
+<script src="/human-logs-fix.js"></script>
+</body>
+</html>

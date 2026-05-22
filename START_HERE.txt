@@ -1,0 +1,13 @@
+Запуск:
+npm install
+npm start
+
+Открыть:
+http://localhost:3000
+
+Работают оба варианта:
+http://localhost:3000/profile
+http://localhost:3000/profile.html
+
+Регистрация и вход теперь прямо на главной сверху.
+Админ-код: admin2026

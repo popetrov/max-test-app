@@ -4,44 +4,289 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>СТРОЙПОДРЯД</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
   <meta name="theme-color" content="#20A8F5">
-</head>
-<body>
 
-  <div class="app">
-    <header class="top-bar">
-      <div class="app-name">СТРОЙПОДРЯД</div>
-    </header>
-
-    <main class="content">
-      <section class="hero-card">
-        <div class="max-badge">mini app</div>
-        <h1>СТРОЙПОДРЯД в МАКС</h1>
-        <p>
-          Добро пожаловать. Здесь мы собираем информацию со всех наших чатов,
-          чатов телеграм и платных сервисов по поиску субподрядчиков.
-        </p>
-      </section>
-
-      <section class="menu">
-        <button class="menu-button" onclick="goToPage('find-contractor.html')">
-          Найти исполнителя
-        </button>
-
-        <button class="menu-button" onclick="goToPage('customer-contacts.html')">
-          Узнать контакты заказчика / Заявки на субподряд
-        </button>
-
-        <button class="menu-button" onclick="goToPage('closed-chat.html')">
-          Закрытый чат
-        </button>
-      </section>
-    </main>
-
-    <footer class="footer">Сервис для строителей, подрядчиков и заказчиков</footer>
+<style id="homeAuthStyles">
+.home-auth-panel{max-width:630px;margin:14px auto 12px;background:rgba(255,255,255,.86);border:1px solid rgba(30,98,170,.13);border-radius:22px;padding:14px;box-shadow:0 18px 45px rgba(21,68,120,.14);backdrop-filter:blur(10px)}
+.home-auth-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.home-auth-user{display:flex;align-items:center;gap:10px;min-width:0}
+.home-auth-avatar{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#20a8f5,#1278ff);display:grid;place-items:center;color:#fff;font-weight:900;flex:0 0 auto}
+.home-auth-name{font-weight:900;color:#172234;line-height:1.15}.home-auth-meta{color:#6c7a8c;font-size:12px;margin-top:3px}
+.home-auth-actions{display:flex;gap:8px;flex-wrap:wrap}.home-auth-btn{border:0;border-radius:13px;padding:10px 12px;font-weight:900;cursor:pointer;background:#1f8cff;color:#fff}
+.home-auth-btn.secondary{background:rgba(32,168,245,.10);color:#147ed0}.home-auth-btn.admin{background:#8b5cf6;color:#fff}.home-auth-btn.danger{background:rgba(255,77,77,.12);color:#c62828}
+.home-auth-modal{position:fixed;inset:0;background:rgba(11,18,32,.42);display:none;align-items:center;justify-content:center;z-index:9999;padding:14px}.home-auth-modal.open{display:flex}
+.home-auth-box{width:min(520px,100%);background:#fff;border-radius:24px;padding:18px;box-shadow:0 25px 90px rgba(0,0,0,.22);color:#172234}
+.home-auth-box h2{margin:0 0 10px;color:#172234;font-size:24px}.home-auth-box p{margin:0 0 14px;color:#6c7a8c;line-height:1.4}
+.home-auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.home-auth-field{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.home-auth-field label{font-weight:800;color:#334155;font-size:13px}.home-auth-field input{width:100%;border:1px solid rgba(30,98,170,.17);border-radius:14px;padding:13px 14px;font-size:15px;outline:none;background:#f8fbff}
+.home-auth-field input:focus{border-color:#20a8f5;box-shadow:0 0 0 4px rgba(32,168,245,.12)}.home-auth-submit{width:100%;border:0;border-radius:16px;padding:14px;font-weight:900;background:linear-gradient(135deg,#20a8f5,#1278ff);color:#fff;margin-top:4px;cursor:pointer}
+.home-auth-close{width:100%;border:0;border-radius:16px;padding:12px;font-weight:900;background:#eef4fb;color:#496074;margin-top:8px;cursor:pointer}.home-auth-note{background:rgba(139,92,246,.09);color:#6843c4;border-radius:14px;padding:10px;font-size:13px;font-weight:800;margin:10px 0}
+@media(max-width:640px){.home-auth-panel{margin:10px 10px 12px}.home-auth-grid{grid-template-columns:1fr}.home-auth-actions{width:100%}.home-auth-btn{flex:1}}
+</style>
+\n</head>
+\1\n
+<div class="home-auth-panel" id="homeAuthPanel">
+  <div class="home-auth-top">
+    <div class="home-auth-user">
+      <div class="home-auth-avatar" id="homeAuthAvatar">Г</div>
+      <div>
+        <div class="home-auth-name" id="homeAuthName">Гость</div>
+        <div class="home-auth-meta" id="homeAuthMeta">Вы не зарегистрированы</div>
+      </div>
+    </div>
+    <div class="home-auth-actions" id="homeAuthActions"></div>
   </div>
+</div>
 
-  <script src="script.js"></script>
+<div class="home-auth-modal" id="homeAuthModal">
+  <div class="home-auth-box">
+    <div id="homeAuthContent"></div>
+    <button class="home-auth-close" onclick="closeAuthModal()">Закрыть</button>
+  </div>
+</div>
+
+<script id="homeAuthScript">
+function renderHomeAuth(){
+  if(!window.SP || !window.SPAuth) return;
+  const u = SP.user();
+  const name = u.displayName || u.name || 'Гость';
+  const role = u.role || 'guest';
+  const plan = u.plan || 'free';
+  document.getElementById('homeAuthAvatar').textContent = name.slice(0,1).toUpperCase();
+  document.getElementById('homeAuthName').textContent = name;
+  document.getElementById('homeAuthMeta').textContent = role === 'guest' ? 'Вы не зарегистрированы' : `Роль: ${role} · Тариф: ${plan}${u.email ? ' · ' + u.email : ''}`;
+
+  const actions = document.getElementById('homeAuthActions');
+  if(role === 'guest'){
+    actions.innerHTML = `
+      <button class="home-auth-btn" onclick="openAuthModal('register')">Регистрация</button>
+      <button class="home-auth-btn secondary" onclick="openAuthModal('login')">Войти</button>
+      <button class="home-auth-btn admin" onclick="openAuthModal('admin')">Админ</button>`;
+  } else {
+    actions.innerHTML = `
+      <button class="home-auth-btn secondary" onclick="goToPage('/profile')">Профиль</button>
+      ${['admin','owner'].includes(role) ? `<button class="home-auth-btn admin" onclick="goToPage('/admin')">Админ-панель</button>` : ''}
+      <button class="home-auth-btn danger" onclick="logoutFromHome()">Выйти</button>`;
+  }
+  document.body.classList.toggle('admin-visible', ['admin','owner'].includes(role));
+}
+
+function openAuthModal(mode){
+  const modal = document.getElementById('homeAuthModal');
+  const box = document.getElementById('homeAuthContent');
+  if(mode === 'register'){
+    box.innerHTML = `<h2>Регистрация пользователя</h2><p>Обычный аккаунт: роль user, тариф free.</p>
+      <form onsubmit="homeRegister(event)">
+        <div class="home-auth-grid"><div class="home-auth-field"><label>Имя *</label><input name="name" required placeholder="Иван"></div><div class="home-auth-field"><label>Фамилия</label><input name="surname" placeholder="Необязательно"></div></div>
+        <div class="home-auth-field"><label>Имя в чатах *</label><input name="displayName" required placeholder="Как вас видят в чате"></div>
+        <div class="home-auth-grid"><div class="home-auth-field"><label>Телефон *</label><input name="phone" required placeholder="+7..."></div><div class="home-auth-field"><label>Почта *</label><input name="email" type="email" required placeholder="mail@example.ru"></div></div>
+        <div class="home-auth-field"><label>ИНН компании</label><input name="inn" placeholder="Необязательно"></div>
+        <div class="home-auth-field"><label>Пароль *</label><input name="password" type="password" required placeholder="Придумайте пароль"></div>
+        <button class="home-auth-submit">Создать аккаунт</button>
+      </form>`;
+  }
+  if(mode === 'login'){
+    box.innerHTML = `<h2>Вход пользователя</h2><p>Войдите в созданный демо-аккаунт.</p>
+      <form onsubmit="homeLogin(event)">
+        <div class="home-auth-field"><label>Почта</label><input name="email" type="email" required></div>
+        <div class="home-auth-field"><label>Пароль</label><input name="password" type="password" required></div>
+        <button class="home-auth-submit">Войти</button>
+      </form>`;
+  }
+  if(mode === 'admin'){
+    box.innerHTML = `<h2>Вход администратора</h2><p>Тестовый вход в админку для владельца проекта.</p>
+      <div class="home-auth-note">Тест-код: <b>admin2026</b><br>В рабочей версии заменим на backend-права.</div>
+      <form onsubmit="homeAdminLogin(event)">
+        <div class="home-auth-field"><label>Админ-код</label><input name="code" required placeholder="admin2026"></div>
+        <button class="home-auth-submit">Войти как админ</button>
+      </form>`;
+  }
+  modal.classList.add('open');
+}
+function closeAuthModal(){ document.getElementById('homeAuthModal').classList.remove('open'); }
+function homeRegister(e){ e.preventDefault(); try{ const f=e.target; SPAuth.register({name:f.name.value.trim(),surname:f.surname.value.trim(),displayName:f.displayName.value.trim(),phone:f.phone.value.trim(),email:f.email.value.trim(),inn:f.inn.value.trim(),password:f.password.value}); closeAuthModal(); renderHomeAuth(); alert('Аккаунт создан. Вы вошли как обычный пользователь.'); }catch(err){ alert(err.message); } }
+function homeLogin(e){ e.preventDefault(); try{ const f=e.target; SPAuth.login(f.email.value,f.password.value); closeAuthModal(); renderHomeAuth(); alert('Вы вошли.'); }catch(err){ alert(err.message); } }
+function homeAdminLogin(e){ e.preventDefault(); try{ SPAuth.adminLogin(e.target.code.value); closeAuthModal(); renderHomeAuth(); alert('Вы вошли как админ. Кнопка админ-панели появилась сверху.'); }catch(err){ alert(err.message); } }
+function logoutFromHome(){ SPAuth.logout(); renderHomeAuth(); }
+document.addEventListener('DOMContentLoaded', renderHomeAuth);
+</script>
+
+
+<div class="app">
+  <header class="top-bar">
+    <div class="app-name">СТРОЙПОДРЯД</div>
+  </header>
+
+  <main class="content">
+    <section class="hero-card home-hero">
+      <div class="max-badge">mini app</div>
+      <h1>Строительная B2B-платформа</h1>
+      <p>
+        Исполнители, заявки на субподряд, закрытый чат, презентации компаний,
+        тендерные инструменты и партнёрские сервисы в одном месте.
+      </p>
+    </section>
+
+    <section class="home-section">
+      <div class="section-heading">
+        <h2>Основное</h2>
+        <span>рабочие разделы</span>
+      </div>
+
+      <div class="tile-grid tile-grid-main">
+        <button class="app-tile big-tile tile-blue" onclick="goToPage('find-contractor.html')">
+          <span class="tile-icon">🔎</span>
+          <span class="tile-title">Найти исполнителя</span>
+          <span class="tile-text">Опубликуйте заявку и найдите бригаду, подрядчика или специалиста под задачу.</span>
+          <span class="tile-status status-live">Работает</span>
+        </button>
+
+        <button class="app-tile big-tile tile-orange" onclick="goToPage('customer-contacts.html')">
+          <span class="tile-icon">📋</span>
+          <span class="tile-title">Заявки на субподряд</span>
+          <span class="tile-text">Смотрите заявки на работы. Контакты заказчика, фото и файлы — по тарифу.</span>
+          <span class="tile-status status-pro">Контакты по тарифу</span>
+        </button>
+
+        <button class="app-tile big-tile tile-green" onclick="goToPage('/services')">
+          <span class="tile-icon">🏢</span>
+          <span class="tile-title">Презентация услуг</span>
+          <span class="tile-text">Каталог компаний: услуги, описание, фото, город и открытые контакты.</span>
+          <span class="tile-status status-live">Работает</span>
+        </button>
+
+        <button class="app-tile big-tile tile-violet" onclick="goToPage('chat.html')">
+          <span class="tile-icon">💬</span>
+          <span class="tile-title">Закрытый чат</span>
+          <span class="tile-text">Общение участников, быстрые вопросы, предложения и рабочие контакты.</span>
+          <span class="tile-status status-pro">По тарифу</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="home-section">
+      <div class="section-heading">
+        <h2>Инструменты</h2>
+        <span>проверки и данные</span>
+      </div>
+
+      <div class="tile-grid">
+        <button class="app-tile tile-red" onclick="goToPage('/blacklist')">
+          <span class="tile-icon">⚠️</span>
+          <span class="tile-title">Черный список</span>
+          <span class="tile-text">Данные о недобросовестных подрядчиках, заказчиках и проблемных компаниях.</span>
+          <span class="tile-status status-soon">Работает</span>
+        </button>
+
+        <button class="app-tile tile-cyan" onclick="goToPage('/counterparty')">
+          <span class="tile-icon">✅</span>
+          <span class="tile-title">Проверка контрагентов</span>
+          <span class="tile-text">Проверяйте компанию по ИНН перед оплатой, договором или началом работ.</span>
+          <span class="tile-status status-soon">В разработке</span>
+        </button>
+
+        <button class="app-tile tile-blue" onclick="goToPage('tender-search.html')">
+          <span class="tile-icon">📑</span>
+          <span class="tile-title">Тендерный поисковик</span>
+          <span class="tile-text">Поиск закупок по ЕИС, фильтры, ключевые слова, регионы и документы.</span>
+          <span class="tile-status status-soon">Скоро</span>
+        </button>
+
+        <button class="app-tile tile-gold" onclick="goToPage('tender-winners.html')">
+          <span class="tile-icon">🏆</span>
+          <span class="tile-title">Победители тендеров</span>
+          <span class="tile-text">Выгрузка победителей закупок, контакты и аналитика по направлениям.</span>
+          <span class="tile-status status-soon">Скоро</span>
+        </button>
+
+        <button class="app-tile tile-orange" onclick="goToPage('lpr-by-inn.html')">
+          <span class="tile-icon">☎️</span>
+          <span class="tile-title">ЛПР по ИНН</span>
+          <span class="tile-text">Поиск телефонов и ФИО лиц, принимающих решения, по ИНН организации.</span>
+          <span class="tile-status status-soon">Скоро</span>
+        </button>
+
+        <button class="app-tile tile-violet" onclick="goToPage('notifications.html')">
+          <span class="tile-icon">🔔</span>
+          <span class="tile-title">Уведомления</span>
+          <span class="tile-text">Новые заявки, ответы, системные сообщения и важные события приложения.</span>
+          <span class="tile-status status-soon">Скоро</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="home-section">
+      <div class="section-heading">
+        <h2>Сервисы партнёров</h2>
+        <span>заявки и помощь</span>
+      </div>
+
+      <div class="tile-grid service-tile-grid">
+        <button class="app-tile service-tile tile-green" onclick="goToPage('bank-guarantees.html')">
+          <span class="tile-icon">💳</span>
+          <span class="tile-title">Банковские гарантии и кредиты</span>
+          <span class="tile-text">Оставьте заявку на гарантию, кредит или финансирование под контракт.</span>
+          <span class="tile-status status-soon">Скоро</span>
+        </button>
+
+        <button class="app-tile service-tile tile-blue" onclick="goToPage('tender-support.html')">
+          <span class="tile-icon">🤝</span>
+          <span class="tile-title">Тендерное сопровождение</span>
+          <span class="tile-text">Помощь с подбором закупок, заявками, документами и участием в торгах.</span>
+          <span class="tile-status status-soon">Скоро</span>
+        </button>
+
+        <button class="app-tile service-tile tile-cyan" onclick="goToPage('safety-certificates.html')">
+          <span class="tile-icon">🪪</span>
+          <span class="tile-title">Корочки / охрана труда</span>
+          <span class="tile-text">Обучение, удостоверения, допуски и документы для строительных работ.</span>
+          <span class="tile-status status-soon">Скоро</span>
+        </button>
+
+        <button class="app-tile service-tile tile-red" onclick="goToPage('legal-help.html')">
+          <span class="tile-icon">⚖️</span>
+          <span class="tile-title">Юридическая помощь</span>
+          <span class="tile-text">Договоры, претензии, споры с заказчиками, подрядчиками и поставщиками.</span>
+          <span class="tile-status status-soon">Скоро</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="home-section">
+      <div class="section-heading">
+        <h2>Аккаунт</h2>
+        <span>доступ и настройки</span>
+      </div>
+
+      <div class="tile-grid account-grid">
+        <button class="app-tile tile-gold" onclick="goToPage('/subscription')">
+          <span class="tile-icon">💰</span>
+          <span class="tile-title">Тарифы</span>
+          <span class="tile-text">Выберите доступ: публикация компании, контакты заказчиков или PRO-инструменты.</span>
+        </button>
+        <button class="app-tile tile-cyan" onclick="goToPage('/profile')">
+          <span class="tile-icon">👤</span>
+          <span class="tile-title">Профиль</span>
+          <span class="tile-text">Данные пользователя, компания, ИНН, контакты и настройки аккаунта.</span>
+        </button>
+      <button class="app-tile tile-red admin-only-link" onclick="goToPage('/admin')">
+          <span class="tile-icon">🛡️</span>
+          <span class="tile-title">Админ-панель</span>
+          <span class="tile-text">Модерация, пользователи, тарифы, логи и автопостинг MAX.</span>
+          <span class="tile-status status-pro">ADMIN</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">Сервис для строителей, подрядчиков и заказчиков</footer>
+</div>
+
+<script src="/app-core.js"></script>
+<script src="/script.js"></script>
+<script>document.addEventListener("DOMContentLoaded",()=>{if(SP.isAdmin())document.body.classList.add("admin-visible");});</script>
+<script src="/old-bugs-fix.js"></script>\n<script src="/registration-overlay-fix.js"></script>
+<script src="/human-logs-fix.js"></script>
 </body>
 </html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Профиль</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+  <header class="page-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="page-title">Профиль</div>
+    <div class="header-spacer"></div>
+  </header>
+
+  <main class="content">
+    <section class="hero-card section-hero section-card-cyan">
+      <div class="section-hero-top">
+        <div class="section-icon">👤</div>
+        <div>
+          <div class="section-mini-title">аккаунт</div>
+          <h1 class="section-hero-title" id="profileTitle">Профиль пользователя</h1>
+        </div>
+      </div>
+      <p class="section-description" id="profileDescription">Данные профиля, роль, тариф и тестовые доступы.</p>
+      <div class="section-action-row">
+        <span class="inline-status" id="roleBadge">Статус</span>
+        <span class="inline-status" id="planBadge">Тариф: free</span>
+      </div>
+    </section>
+
+    <section class="soft-card">
+      <h2 id="profileName">Гость</h2>
+      <p class="small-muted" id="profileContacts">Телефон и почта не указаны</p>
+      <div class="card-actions">
+        <button class="submit-button" onclick="goToPage('/registration')">Регистрация / изменить профиль</button>
+        <button class="reset-button" onclick="setPlan('presentation')">Тариф Презентация</button>
+        <button class="reset-button" onclick="setPlan('orders')">Тариф Заказы</button>
+        <button class="reset-button" onclick="setPlan('pro')">PRO</button>
+      </div>
+    </section>
+
+    <section class="soft-card">
+      <h3>Админ-доступ для теста</h3>
+      <p class="small-muted">В рабочей версии админские права выдаются только через backend. Для теста можно включить owner.</p>
+      <div class="form-row">
+        <button class="submit-button" onclick="setOwner()">Включить owner</button>
+        <button class="reset-button" onclick="AppFix.reset()">Выйти / сбросить профиль</button>
+      </div>
+    </section>
+
+    <section class="feature-grid">
+      <div class="feature-card" onclick="location.href=\'/services/\'"><b>Мои публикации</b><span>Презентации услуг и заявки.</span></div>
+      <div class="feature-card" onclick="location.href=\'/admin/\'"><b>Модерация</b><span>Ваши отправленные записи со статусами.</span></div>
+      <div class="feature-card" onclick="location.href=\'/subscription/\'"><b>Тариф</b><span>Доступ к контактам, чату и PRO-разделам.</span></div>
+      <div class="feature-card admin-only-profile"><b>Админка</b><span>Логи и аналитика доступны только администратору.</span></div>
+    </section>
+
+    <button class="home-button" onclick="goHome()">На главную</button>
+  </main>
+</div>
+<script src="/app-core.js">
+function renderAdminOnlyProfile(){
+  const u = SP.user();
+  document.querySelectorAll('.admin-only-profile').forEach(el => {
+    el.style.display = ['admin','owner'].includes(u.role) ? 'block' : 'none';
+  });
+}
+renderAdminOnlyProfile();
+</script>
+<script src="/script.js">
+function renderAdminOnlyProfile(){
+  const u = SP.user();
+  document.querySelectorAll('.admin-only-profile').forEach(el => {
+    el.style.display = ['admin','owner'].includes(u.role) ? 'block' : 'none';
+  });
+}
+renderAdminOnlyProfile();
+</script>
+<script>
+function renderProfile(){
+  const u = SP.user();
+  const name = u.displayName || u.name || 'Гость';
+  const plan = u.plan || 'free';
+  const role = u.role || 'guest';
+  document.getElementById('profileName').textContent = name;
+  document.getElementById('profileTitle').textContent = name === 'Гость' ? 'Профиль пользователя' : 'Профиль: ' + name;
+  document.getElementById('profileContacts').textContent = [u.phone, u.email, u.inn ? 'ИНН: '+u.inn : ''].filter(Boolean).join(' · ') || 'Телефон и почта не указаны';
+  document.getElementById('roleBadge').textContent = role === 'guest' ? 'Гость' : 'Зарегистрирован';
+  document.getElementById('planBadge').textContent = plan === 'free' ? 'Бесплатный доступ' : 'Тариф: ' + plan;
+  document.querySelectorAll('.admin-only-profile').forEach(el => {
+    el.style.display = ['admin','owner'].includes(role) ? 'block' : 'none';
+  });
+}
+function setPlan(plan){ SP.saveUser({plan, role: SP.user().role === 'guest' ? 'user' : SP.user().role}); renderProfile(); alert('Тариф включен: '+plan); if(plan==='orders'||plan==='pro'){ localStorage.setItem('chatUserName', (SP.user().displayName||SP.user().name||'Пользователь')); } }
+function setOwner(){ SP.saveUser({role:'owner', plan:'pro', displayName: SP.user().displayName || 'Владелец'}); renderProfile(); alert('Owner включен. Теперь можно открыть админ-панель.'); }
+function logoutDemo(){ localStorage.removeItem('sp_user'); renderProfile(); alert('Профиль сброшен'); }
+renderProfile();
+
+function renderAdminOnlyProfile(){
+  const u = SP.user();
+  document.querySelectorAll('.admin-only-profile').forEach(el => {
+    el.style.display = ['admin','owner'].includes(u.role) ? 'block' : 'none';
+  });
+}
+renderAdminOnlyProfile();
+</script>
+<script src="/old-bugs-fix.js"></script>\n<script src="/registration-overlay-fix.js"></script>
+<script src="/human-logs-fix.js"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Черный список</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+  <header class="page-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="page-title">Черный список</div>
+    <div class="header-spacer"></div>
+  </header>
+  <main class="content">
+    <section class="hero-card section-hero section-card-red">
+      <div class="section-hero-top"><div class="section-icon">⚠️</div><div><div class="section-mini-title">инструмент</div><h1 class="section-hero-title">Черный список</h1></div></div>
+      <p class="section-description">Поиск по ИНН или названию компании. Добавление записей — только через модерацию.</p>
+      <div class="section-action-row"><span class="inline-status">Поиск открыт всем</span><span class="inline-status">Публикация после проверки</span></div>
+      <div class="filters-box">
+        <input id="blackSearch" placeholder="Поиск по ИНН или названию компании" oninput="renderBlacklist()">
+        <select id="blackType" onchange="renderBlacklist()"><option value="">Все типы</option><option>Подрядчик</option><option>Заказчик</option><option>Поставщик</option></select>
+      </div>
+    </section>
+
+    <section class="form-card">
+      <h2>Добавить компанию</h2>
+      <p class="small-muted">ИНН и название обязательны. Описание и файлы — желательно, но можно отправить без них.</p>
+      <form onsubmit="submitBlacklist(event)">
+        <div class="form-row">
+          <div><label>ИНН *</label><input name="inn" required></div>
+          <div><label>Название компании *</label><input name="title" required></div>
+        </div>
+        <div class="form-row">
+          <div><label>Тип</label><select name="type"><option>Подрядчик</option><option>Заказчик</option><option>Поставщик</option></select></div>
+          <div><label>Город</label><input name="city"></div>
+        </div>
+        <label>Период работы</label><input name="period" placeholder="Например: март 2026">
+        <label>Краткое описание</label><textarea name="description"></textarea>
+        <label>Скриншоты, КС, документы</label><input type="file" multiple>
+        <button class="submit-button">Отправить на модерацию</button>
+      </form>
+    </section>
+
+    <section id="blacklistItems" class="presentation-list"></section>
+    <button class="home-button" onclick="goHome()">На главную</button>
+  </main>
+</div>
+<script src="/app-core.js"></script>
+<script src="/script.js"></script>
+<script>
+const blackItems = [
+  {id:'black-1', title:'ООО Проблемный Подряд', inn:'7700000000', type:'Подрядчик', city:'Москва', views:312, description:'Есть подтвержденные жалобы по срокам и качеству работ.', status:'Подтверждено'},
+  {id:'black-2', title:'ИП Сложный Заказчик', inn:'500000000000', type:'Заказчик', city:'Казань', views:156, description:'Споры по оплате после закрытия этапов.', status:'Проверяется'},
+  {id:'black-3', title:'ООО Материал Снаб', inn:'7800000000', type:'Поставщик', city:'СПб', views:89, description:'Срыв поставок и расхождение по документам.', status:'Подтверждено'}
+];
+function submitBlacklist(e){
+  e.preventDefault();
+  const f=e.target;
+  SP.queueModeration('Черный список',{title:f.title.value.trim(), inn:f.inn.value.trim(), type:f.type.value, city:f.city.value.trim(), period:f.period.value.trim(), description:f.description.value.trim(), files:'файлы/скриншоты'});
+  alert('Запись отправлена на модерацию.');
+  e.target.reset();
+}
+function renderBlacklist(){
+  const q = document.getElementById('blackSearch').value.toLowerCase().trim();
+  const type = document.getElementById('blackType').value;
+  SP.log('search','blacklist',{q,type});
+  const list = document.getElementById('blacklistItems');
+  const filtered = blackItems.filter(x => {
+    const txt = `${x.title} ${x.inn} ${x.type} ${x.city}`.toLowerCase();
+    return (!q || txt.includes(q)) && (!type || x.type===type);
+  });
+  list.innerHTML = filtered.map(x=>`
+    <article class="company-card">
+      <div class="company-top"><div class="company-logo">!</div><div><h2>${escapeHtml(x.title)}</h2><div class="company-tags"><span>${x.type}</span><span>${x.city}</span><span data-view-id="${x.id}" data-view-base="${x.views}">👁 ${x.views} просмотров</span></div></div></div>
+      <p class="company-description">${escapeHtml(x.description)}</p>
+      <div class="company-info"><div><strong>ИНН:</strong> ${x.inn}</div><div><strong>Статус:</strong> ${x.status}</div></div>
+    </article>`).join('') || '<div class="empty-text">Записи не найдены</div>';
+  SP.startSoftViewGrowth();
+}
+renderBlacklist();
+</script>
+<script src="/old-bugs-fix.js"></script>\n<script src="/registration-overlay-fix.js"></script>
+<script src="/human-logs-fix.js"></script>
+</body>
+</html>

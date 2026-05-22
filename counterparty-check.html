@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Проверка контрагентов</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .counterparty-layout { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .check-form-grid { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: end; }
+    .check-form-grid input { width: 100%; }
+    .report-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 14px; min-width: 0; }
+    .report-card { background: rgba(255,255,255,.72); border: 1px solid rgba(30,98,170,.13); border-radius: 20px; padding: 15px; box-shadow: 0 10px 24px rgba(31,43,61,.06); min-width: 0; overflow: hidden; }
+    .report-card.full { grid-column: 1 / -1; }
+    .report-card h3 { margin: 0 0 10px; font-size: 18px; color: #1f2b3d; }
+    .result-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+    .result-cell { background: rgba(255,255,255,.6); border: 1px solid rgba(30, 98, 170, .12); border-radius: 16px; padding: 13px; }
+    .result-cell span { display: block; font-size: 12px; color: #6c7a8c; margin-bottom: 4px; font-weight: 700; }
+    .result-cell b { color: #1f2b3d; font-size: 15px; line-height: 1.25; word-break: break-word; overflow-wrap: anywhere; }
+    .risk-score { display: grid; grid-template-columns: 92px 1fr; gap: 14px; align-items: center; margin-top: 12px; }
+    .risk-circle { width: 92px; height: 92px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 23px; color: #fff; background: linear-gradient(135deg, #19b66a, #1f86ff); box-shadow: 0 12px 30px rgba(31, 134, 255, .24); }
+    .risk-circle.warn { background: linear-gradient(135deg, #ffb300, #ff7a00); }
+    .risk-circle.bad { background: linear-gradient(135deg, #ff4d4d, #b90000); }
+    .metric-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; padding: 9px 0; border-bottom: 1px solid rgba(30,98,170,.10); align-items: start; }
+    .metric-row:last-child { border-bottom: 0; }
+    .metric-row span { color: #6c7a8c; font-size: 13px; }
+    .metric-row b { text-align: right; color: #1f2b3d; word-break: break-word; }
+    .table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 14px; margin-top: 10px; background: rgba(255,255,255,.35); }
+    .finance-table, .cases-table { min-width: 430px; width: 100%; border-collapse: collapse; font-size: 13px; overflow: hidden; border-radius: 14px; }
+    .finance-table th, .finance-table td, .cases-table th, .cases-table td { padding: 10px; border-bottom: 1px solid rgba(30,98,170,.10); text-align: left; vertical-align: top; word-break: break-word; }
+    .finance-table th, .cases-table th { color: #516173; background: rgba(32,168,245,.08); font-size: 12px; }
+    .analysis-loading { padding: 14px; border-radius: 16px; background: rgba(32,168,245,.08); color: #1681d4; font-weight: 800; margin-top: 12px; }
+    .analysis-empty { padding: 14px; border-radius: 16px; background: rgba(255,255,255,.58); color: #6c7a8c; margin-top: 12px; }
+    .blacklist-alert { background: rgba(255, 77, 77, .10); border: 1px solid rgba(255, 77, 77, .24); color: #a52222; border-radius: 18px; padding: 14px; margin-top: 12px; font-weight: 800; }
+    .blacklist-ok { background: rgba(30, 184, 106, .10); border: 1px solid rgba(30, 184, 106, .22); color: #16824e; border-radius: 18px; padding: 14px; margin-top: 12px; font-weight: 800; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+    .summary-card { background: rgba(255,255,255,.62); border: 1px solid rgba(30,98,170,.12); border-radius: 16px; padding: 12px; min-width: 0; }
+    .summary-card span { display:block; color:#6c7a8c; font-size: 12px; font-weight:800; margin-bottom:5px; }
+    .summary-card b { display:block; color:#1f2b3d; font-size: 16px; word-break: break-word; }
+    .risk-badges { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+    .risk-badge { border-radius: 16px; padding: 12px; border: 1px solid rgba(30,98,170,.12); background: rgba(255,255,255,.55); font-weight: 850; color: #1f2b3d; }
+    .risk-badge small { display:block; margin-top: 3px; color:#6c7a8c; font-weight:700; line-height:1.25; }
+    .risk-badge.ok { background: rgba(30,184,106,.10); border-color: rgba(30,184,106,.22); }
+    .risk-badge.warn { background: rgba(255,179,0,.12); border-color: rgba(255,179,0,.28); }
+    .risk-badge.bad { background: rgba(255,77,77,.10); border-color: rgba(255,77,77,.26); }
+    .list-card { display: grid; gap: 8px; margin-top: 10px; }
+    .case-item, .enforcement-item { padding: 11px; border-radius: 14px; background: rgba(255,255,255,.52); border: 1px solid rgba(30,98,170,.10); }
+    .case-item b, .enforcement-item b { color:#1f2b3d; word-break: break-word; }
+    .case-item p, .enforcement-item p { margin: 5px 0 0; color:#6c7a8c; font-size: 13px; line-height:1.35; }
+    .locked-panel { text-align: center; padding: 24px; }
+    .locked-panel .lock-icon { font-size: 42px; margin-bottom: 10px; }
+    .check-history-list { display: grid; gap: 10px; }
+    @media (min-width: 900px) {
+      .report-grid.two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .check-form-grid, .result-grid, .risk-score, .report-grid, .summary-grid, .risk-badges { grid-template-columns: 1fr; }
+      .risk-circle { width: 78px; height: 78px; font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="page-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="page-title">Проверка контрагентов</div>
+    <div class="header-spacer"></div>
+  </header>
+
+  <main class="content counterparty-layout">
+    <section class="hero-card section-hero section-card-cyan">
+      <div class="section-hero-top">
+        <div class="section-icon">✅</div>
+        <div>
+          <div class="section-mini-title">проверка по ИНН / ОГРН</div>
+          <h1 class="section-hero-title">Полный отчет по компании</h1>
+        </div>
+      </div>
+      <p class="section-description">
+        Проверка контрагента перед оплатой, договором, тендером или началом работ. Отчет доступен пользователям с тарифом PRO.
+      </p>
+      <div class="section-action-row">
+        <span class="inline-status">Реквизиты</span>
+        <span class="inline-status">Финансы</span>
+        <span class="inline-status">Суды</span>
+        <span class="inline-status">Риски</span>
+      </div>
+    </section>
+
+    <section id="accessBlock" class="form-card"></section>
+    <section id="counterpartyResult"></section>
+
+    <section class="form-card">
+      <h2>История проверок</h2>
+      <div id="checkHistory" class="check-history-list">
+        <p class="small-muted">Пока проверок нет.</p>
+      </div>
+    </section>
+
+    <button class="home-button" onclick="goHome()">На главную</button>
+  </main>
+</div>
+
+<div class="modal-overlay" id="subscriptionModal">
+  <div class="subscription-modal">
+    <button class="modal-close" onclick="closeSubscriptionModal()">×</button>
+    <div class="max-badge">PRO</div>
+    <h2>Нужен тариф PRO</h2>
+    <p data-paywall-text>Проверка контрагентов доступна по тарифу PRO.</p>
+    <div class="modal-price">PRO-доступ</div>
+    <button class="modal-pay-button" onclick="goToPage('/subscription')">Посмотреть тарифы</button>
+    <button class="modal-secondary-button" onclick="closeSubscriptionModal()">Закрыть</button>
+  </div>
+</div>
+
+<script src="/app-core.js"></script>
+<script src="/script.js"></script>
+<script>
+let currentCompany = null;
+let reportMetrics = { finances: null, cases: null, enforcements: null };
+
+function initAccessBlock() {
+  const box = document.getElementById('accessBlock');
+  if (SP.can('counterparty_full')) {
+    box.innerHTML = `
+      <h2>Введите ИНН или ОГРН</h2>
+      <p class="small-muted">На тарифе PRO доступна полная проверка: карточка компании, финансы, суды, риск-оценка и история проверок.</p>
+      <div class="check-form-grid">
+        <div>
+          <label>ИНН / ОГРН</label>
+          <input id="counterpartyInput" inputmode="numeric" placeholder="Например: 7704382422">
+        </div>
+        <button class="submit-button" onclick="checkCounterparty()">Проверить</button>
+      </div>
+    `;
+  } else {
+    box.innerHTML = `
+      <div class="locked-panel">
+        <div class="lock-icon">🔒</div>
+        <h2>Проверка контрагентов доступна на PRO</h2>
+        <p class="small-muted">Без подписки проверка закрыта. После подключения тарифа PRO отчет будет работать полностью.</p>
+        <button class="submit-button" onclick="goToPage('/subscription')">Подключить PRO</button>
+      </div>
+    `;
+  }
+}
+
+async function checkCounterparty() {
+  if (!SP.requireAccess('counterparty_full', 'Проверка контрагентов доступна по тарифу PRO.')) return;
+
+  const input = document.getElementById('counterpartyInput');
+  const value = input ? input.value.trim() : '';
+  if (!value) {
+    alert('Введите ИНН или ОГРН');
+    return;
+  }
+
+  SP.log('check_counterparty', 'counterparty', { query: value });
+  document.getElementById('counterpartyResult').innerHTML = '<section class="form-card"><div class="analysis-loading">Формируем отчет по компании...</div></section>';
+
+  try {
+    const response = await fetch('/api/check-counterparty', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: value })
+    });
+    const result = await response.json();
+
+    if (!result.success) throw new Error(result.error || 'Не удалось получить данные');
+
+    const company = normalizeCompany(result.data, value);
+    currentCompany = company;
+    reportMetrics = { finances: null, cases: null, enforcements: null };
+    renderFullReport(company);
+    saveCheckHistory(company);
+    renderHistory();
+    loadExtraData(company.inn);
+  } catch (error) {
+    console.error(error);
+    document.getElementById('counterpartyResult').innerHTML = `
+      <section class="form-card">
+        <h2>Не удалось выполнить проверку</h2>
+        <p class="small-muted">Проверьте ИНН/ОГРН и попробуйте еще раз. Если ошибка повторяется — проверьте сервер и API-ключ.</p>
+      </section>
+    `;
+  }
+}
+
+function normalizeCompany(payload, query) {
+  const raw = unwrapPayload(payload);
+  const name = pick(raw, ['НаимСокр', 'НаимПолн', 'name', 'shortName', 'fullName', 'Наименование']) || 'Компания';
+  const inn = pick(raw, ['ИНН', 'inn']) || (String(query).match(/^\d{10,12}$/) ? query : '—');
+  const ogrn = pick(raw, ['ОГРН', 'ОГРНИП', 'ogrn']) || '—';
+  const status = pick(raw, ['Статус', 'status', 'СтатусЮЛ']) || '—';
+  const director = pick(raw, ['Руководитель.ФИО', 'Руковод.ФИО', 'director', 'Директор', 'ФИОРук']) || getNestedName(raw['Руководитель'] || raw['Руковод']);
+  const address = pick(raw, ['ЮрАдрес.АдресРФ', 'Адрес', 'address', 'ЮрАдрес']) || '—';
+  const okved = pick(raw, ['ОКВЭД.Наим', 'ОКВЭД', 'okved', 'ОКВЭДОсн.Наим']) || '—';
+  const regDate = pick(raw, ['ДатаРег', 'registrationDate', 'ДатаОГРН']) || '—';
+  const kpp = pick(raw, ['КПП', 'kpp']) || '—';
+  const capital = pick(raw, ['УстКап.Сумма', 'УстКапитал', 'capital']) || '—';
+
+  const risk = calculateRisk(raw, status);
+  const score = risk === 'Высокий' ? 35 : risk === 'Средний' ? 65 : 88;
+
+  return { name, inn, ogrn, kpp, status, director, address, okved, regDate, capital, risk, score, blacklist: isBlacklisted(inn), raw };
+}
+
+function unwrapPayload(payload) {
+  if (!payload) return {};
+  if (payload.data) return unwrapPayload(payload.data);
+  if (payload.company) return payload.company;
+  if (payload.ЮЛ) return payload.ЮЛ;
+  if (payload.ИП) return payload.ИП;
+  if (Array.isArray(payload.items) && payload.items[0]) return payload.items[0];
+  if (Array.isArray(payload['Записи']) && payload['Записи'][0]) return payload['Записи'][0];
+  return payload;
+}
+
+function pick(obj, paths) {
+  for (const path of paths) {
+    const value = path.split('.').reduce((acc, key) => acc && acc[key], obj);
+    if (value !== undefined && value !== null && value !== '') return typeof value === 'object' ? getNestedName(value) : String(value);
+  }
+  return '';
+}
+
+function getNestedName(value) {
+  if (!value) return '—';
+  if (typeof value === 'string') return value;
+  if (value['ФИО']) return value['ФИО'];
+  if (value['ФИОПолн']) return value['ФИОПолн'];
+  if (value['Наим']) return value['Наим'];
+  if (value.name) return value.name;
+  if (value.fullName) return value.fullName;
+  return '—';
+}
+
+function isBlacklisted(inn) {
+  return ['500000000000', '7700000000'].includes(String(inn));
+}
+
+function calculateRisk(raw, status) {
+  const text = JSON.stringify(raw || {}).toLowerCase() + ' ' + String(status || '').toLowerCase();
+  if (text.includes('ликвид') || text.includes('банкрот') || text.includes('недостовер') || text.includes('дисквал')) return 'Высокий';
+  if (text.includes('прекращ') || text.includes('реорган') || text.includes('массов')) return 'Средний';
+  return 'Низкий';
+}
+
+function riskClass(company) {
+  if (company.risk === 'Высокий') return 'bad';
+  if (company.risk === 'Средний') return 'warn';
+  return '';
+}
+
+function renderFullReport(company) {
+  document.getElementById('counterpartyResult').innerHTML = `
+    <section class="form-card">
+      <h2>${escapeHtml(company.name)}</h2>
+      <div class="risk-score">
+        <div id="riskCircle" class="risk-circle ${riskClass(company)}">${company.score}</div>
+        <div>
+          <div id="riskStatus" class="status-pill ${company.risk === 'Высокий' ? 'bad' : company.risk === 'Низкий' ? 'ok' : 'warn'}">Риск: ${escapeHtml(company.risk)}</div>
+          <p class="small-muted">Оценка обновляется после загрузки финансов, судов и исполнительных производств.</p>
+        </div>
+      </div>
+      <div class="summary-grid">
+        <div class="summary-card"><span>Финансы</span><b id="summaryFinance">Загрузка...</b></div>
+        <div class="summary-card"><span>Суды</span><b id="summaryCases">Загрузка...</b></div>
+        <div class="summary-card"><span>ФССП</span><b id="summaryFssp">Загрузка...</b></div>
+        <div class="summary-card"><span>Итог</span><b id="summaryRisk">${escapeHtml(company.risk)}</b></div>
+      </div>
+      ${company.blacklist ? '<div class="blacklist-alert">⚠️ Найдена запись в нашем черном списке.</div>' : '<div class="blacklist-ok">✅ В нашем черном списке записей по этому ИНН не найдено.</div>'}
+
+      <div class="report-grid">
+        <div class="report-card full">
+          <h3>Основная информация</h3>
+          <div class="result-grid">
+            <div class="result-cell"><span>ИНН</span><b>${escapeHtml(company.inn)}</b></div>
+            <div class="result-cell"><span>ОГРН</span><b>${escapeHtml(company.ogrn)}</b></div>
+            <div class="result-cell"><span>КПП</span><b>${escapeHtml(company.kpp)}</b></div>
+            <div class="result-cell"><span>Статус</span><b>${escapeHtml(company.status)}</b></div>
+            <div class="result-cell"><span>Дата регистрации</span><b>${escapeHtml(company.regDate)}</b></div>
+            <div class="result-cell"><span>Уставный капитал</span><b>${escapeHtml(String(company.capital))}</b></div>
+            <div class="result-cell"><span>Руководитель</span><b>${escapeHtml(company.director)}</b></div>
+            <div class="result-cell"><span>ОКВЭД</span><b>${escapeHtml(company.okved)}</b></div>
+            <div class="result-cell"><span>Адрес</span><b>${escapeHtml(company.address)}</b></div>
+          </div>
+        </div>
+        <div class="report-card full">
+          <h3>Финансы</h3>
+          <div id="financesBox" class="analysis-loading">Загружаем финансы...</div>
+        </div>
+        <div class="report-card full">
+          <h3>Суды</h3>
+          <div id="legalCasesBox" class="analysis-loading">Загружаем судебные дела...</div>
+        </div>
+        <div class="report-card full">
+          <h3>ФССП</h3>
+          <div id="enforcementsBox" class="analysis-loading">Загружаем исполнительные производства...</div>
+        </div>
+        <div class="report-card full">
+          <h3>Риски</h3>
+          <div id="riskFactorsBox" class="risk-badges"></div>
+        </div>
+        <div class="report-card full">
+          <h3>Вывод</h3>
+          <div id="reportConclusion">${makeConclusion(company)}</div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function makeConclusion(company) {
+  if (company.blacklist || company.risk === 'Высокий') {
+    return '<div class="blacklist-alert">Рекомендуется дополнительная проверка документов, договора, полномочий подписанта и истории оплат перед началом работы.</div>';
+  }
+  if (company.risk === 'Средний') {
+    return '<div class="analysis-empty">Есть признаки, которые стоит изучить подробнее перед сделкой.</div>';
+  }
+  return '<div class="blacklist-ok">Критичных признаков риска на базовом уровне не найдено.</div>';
+}
+
+async function loadExtraData(inn) {
+  renderRiskFactors();
+  await Promise.allSettled([loadFinances(inn), loadLegalCases(inn), loadEnforcements(inn)]);
+  updateRiskDashboard();
+}
+
+async function loadFinances(inn) {
+  try {
+    const response = await fetch('/api/check-counterparty/finances', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ inn }) });
+    const result = await response.json();
+    renderFinances(result.success ? result.data : null);
+  } catch (e) {
+    console.error(e);
+    renderFinances(null);
+  }
+}
+
+async function loadLegalCases(inn) {
+  try {
+    const response = await fetch('/api/check-counterparty/legal-cases', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ inn }) });
+    const result = await response.json();
+    renderLegalCases(result.success ? result.data : null);
+  } catch (e) {
+    console.error(e);
+    renderLegalCases(null);
+  }
+}
+
+function renderFinances(payload) {
+  const box = document.getElementById('financesBox');
+  if (!box) return;
+  const data = unwrapFinance(payload);
+  const years = Object.keys(data || {}).filter(y => /^\d{4}$/.test(y)).sort();
+  if (!years.length) {
+    reportMetrics.finances = { found: false, revenue: 0, profit: 0, growth: null };
+    box.innerHTML = '<div class="analysis-empty">Финансовая отчетность не найдена.</div>';
+    updateRiskDashboard();
+    return;
+  }
+  const latestYear = years[years.length - 1];
+  const latest = data[latestYear] || {};
+  const prev = years.length > 1 ? data[years[years.length - 2]] || {} : {};
+  const revenue = num(latest['2110'] || latest.revenue || latest['Выручка']);
+  const profit = num(latest['2400'] || latest.profit || latest['Прибыль']);
+  const assets = num(latest['1600'] || latest.assets || latest['Активы']);
+  const debt = num(latest['1520'] || latest.debt || latest['Кредиторка']);
+  const prevRevenue = num(prev['2110'] || prev.revenue || prev['Выручка']);
+  const growth = prevRevenue ? Math.round(((revenue - prevRevenue) / Math.abs(prevRevenue)) * 100) : null;
+  reportMetrics.finances = { found: true, revenue, profit, assets, debt, growth, latestYear };
+  updateRiskDashboard();
+  box.innerHTML = `
+    <div class="metric-row"><span>Год отчетности</span><b>${latestYear}</b></div>
+    <div class="metric-row"><span>Выручка</span><b>${formatMoney(revenue)}</b></div>
+    <div class="metric-row"><span>Прибыль / убыток</span><b>${formatMoney(profit)}</b></div>
+    <div class="metric-row"><span>Активы</span><b>${formatMoney(assets)}</b></div>
+    <div class="metric-row"><span>Кредиторская задолженность</span><b>${formatMoney(debt)}</b></div>
+    <div class="metric-row"><span>Динамика выручки</span><b>${growth === null ? '—' : growth + '%'}</b></div>
+    <div class="table-scroll"><table class="finance-table"><thead><tr><th>Год</th><th>Выручка</th><th>Прибыль</th></tr></thead><tbody>${years.slice(-4).reverse().map(y => `<tr><td>${y}</td><td>${formatMoney(num(data[y]['2110'] || data[y].revenue || data[y]['Выручка']))}</td><td>${formatMoney(num(data[y]['2400'] || data[y].profit || data[y]['Прибыль']))}</td></tr>`).join('')}</tbody></table></div>
+  `;
+}
+
+function unwrapFinance(payload) {
+  if (!payload) return null;
+  if (payload.data) return unwrapFinance(payload.data);
+  if (payload['Финансы']) return payload['Финансы'];
+  if (payload.finance) return payload.finance;
+  return payload;
+}
+
+function renderLegalCases(payload) {
+  const box = document.getElementById('legalCasesBox');
+  if (!box) return;
+  const data = payload && payload.data ? payload.data : payload;
+  const records = Array.isArray(data) ? data : (data && (data['Записи'] || data.records || data.items || data.cases)) || [];
+  const total = data && (data['ЗапВсего'] || data.total || records.length) || records.length;
+  if (!records.length) {
+    reportMetrics.cases = { total: total || 0, visible: 0, sum: 0 };
+    box.innerHTML = `<div class="metric-row"><span>Всего дел</span><b>${total || 0}</b></div><div class="analysis-empty">Последние судебные дела не найдены.</div>`;
+    updateRiskDashboard();
+    return;
+  }
+  const sum = records.reduce((acc, item) => acc + num(item['Сумма'] || item.price || item.amount), 0);
+  reportMetrics.cases = { total: num(total), visible: records.length, sum };
+  updateRiskDashboard();
+  box.innerHTML = `
+    <div class="metric-row"><span>Всего дел</span><b>${total}</b></div>
+    <div class="metric-row"><span>Сумма по видимым делам</span><b>${formatMoney(sum)}</b></div>
+    <div class="table-scroll"><table class="cases-table"><thead><tr><th>Дата</th><th>Дело</th><th>Роль / сумма</th></tr></thead><tbody>${records.slice(0, 5).map(item => {
+      const number = item['Номер'] || item['№'] || item.case_number || item.number || '—';
+      const date = item['Дата'] || item.date || item['ДатаРег'] || '—';
+      const role = item['Роль'] || item.role || detectCaseRole(item);
+      const amount = item['Сумма'] || item.price || item.amount || 0;
+      const url = item['URL'] || item.url || item['Ссылка'] || '';
+      const title = url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(number)}</a>` : escapeHtml(number);
+      return `<tr><td>${escapeHtml(date)}</td><td>${title}</td><td>${escapeHtml(role)}<br><b>${formatMoney(amount)}</b></td></tr>`;
+    }).join('')}</tbody></table></div>
+  `;
+}
+
+
+async function loadEnforcements(inn) {
+  try {
+    const response = await fetch('/api/check-counterparty/enforcements', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ inn }) });
+    const result = await response.json();
+    renderEnforcements(result.success ? result.data : null);
+  } catch (e) {
+    console.error(e);
+    renderEnforcements(null);
+  }
+}
+
+function renderEnforcements(payload) {
+  const box = document.getElementById('enforcementsBox');
+  if (!box) return;
+  const data = payload && payload.data ? payload.data : payload;
+  const records = Array.isArray(data) ? data : (data && (data['Записи'] || data.records || data.items || data.enforcements || data.executions)) || [];
+  const total = data && (data['ЗапВсего'] || data.total || data.count || records.length) || records.length;
+  const sum = records.reduce((acc, item) => acc + num(item['Сумма'] || item.amount || item.debt || item['Остаток']), 0);
+  reportMetrics.enforcements = { total: num(total), visible: records.length, sum };
+  updateRiskDashboard();
+
+  if (!records.length) {
+    box.innerHTML = `<div class="metric-row"><span>Исполнительных производств</span><b>${total || 0}</b></div><div class="blacklist-ok">✅ Активные производства не найдены.</div>`;
+    return;
+  }
+
+  box.innerHTML = `
+    <div class="metric-row"><span>Исполнительных производств</span><b>${total}</b></div>
+    <div class="metric-row"><span>Сумма по видимым производствам</span><b>${formatMoney(sum)}</b></div>
+    <div class="list-card">${records.slice(0, 5).map(item => {
+      const title = item['Предмет'] || item.subject || item['ИспПроизв'] || item.number || item['Номер'] || 'Исполнительное производство';
+      const date = item['Дата'] || item.date || item['ДатаВозб'] || '—';
+      const amount = item['Сумма'] || item.amount || item.debt || item['Остаток'] || 0;
+      const department = item['Отдел'] || item.department || item['ОСП'] || '';
+      return `<div class="enforcement-item"><b>${escapeHtml(title)}</b><p>Дата: ${escapeHtml(date)} · Сумма: ${formatMoney(amount)}${department ? ' · ' + escapeHtml(department) : ''}</p></div>`;
+    }).join('')}</div>
+  `;
+}
+
+function getRiskSummary() {
+  if (!currentCompany) return { risk: 'Низкий', score: 88, cls: '', factors: [] };
+  const factors = [];
+  let points = 0;
+
+  if (currentCompany.blacklist) { points += 45; factors.push({ level: 'bad', title: 'Черный список', text: 'Есть запись в нашей базе предупреждений.' }); }
+  else { factors.push({ level: 'ok', title: 'Черный список', text: 'Записей по ИНН не найдено.' }); }
+
+  if (currentCompany.risk === 'Высокий') { points += 40; factors.push({ level: 'bad', title: 'Статус / признаки', text: 'Есть критичные признаки в карточке компании.' }); }
+  else if (currentCompany.risk === 'Средний') { points += 20; factors.push({ level: 'warn', title: 'Статус / признаки', text: 'Есть признаки, которые стоит проверить.' }); }
+  else { factors.push({ level: 'ok', title: 'Статус / признаки', text: 'Критичных признаков в карточке не найдено.' }); }
+
+  const casesTotal = reportMetrics.cases ? num(reportMetrics.cases.total) : null;
+  if (casesTotal === null) factors.push({ level: 'warn', title: 'Суды', text: 'Данные еще загружаются.' });
+  else if (casesTotal > 100) { points += 25; factors.push({ level: 'bad', title: 'Суды', text: `Высокая судебная активность: ${casesTotal} дел.` }); }
+  else if (casesTotal > 20) { points += 12; factors.push({ level: 'warn', title: 'Суды', text: `Есть судебная активность: ${casesTotal} дел.` }); }
+  else factors.push({ level: 'ok', title: 'Суды', text: `Судебная активность низкая: ${casesTotal} дел.` });
+
+  const fsspTotal = reportMetrics.enforcements ? num(reportMetrics.enforcements.total) : null;
+  const fsspSum = reportMetrics.enforcements ? num(reportMetrics.enforcements.sum) : 0;
+  if (fsspTotal === null) factors.push({ level: 'warn', title: 'ФССП', text: 'Данные еще загружаются.' });
+  else if (fsspTotal > 0 || fsspSum > 0) { points += 30; factors.push({ level: 'bad', title: 'ФССП', text: `Найдены исполнительные производства: ${fsspTotal}.` }); }
+  else factors.push({ level: 'ok', title: 'ФССП', text: 'Исполнительные производства не найдены.' });
+
+  if (reportMetrics.finances && reportMetrics.finances.found) {
+    if (reportMetrics.finances.profit < 0) { points += 12; factors.push({ level: 'warn', title: 'Финансы', text: 'По последней отчетности убыток.' }); }
+    else factors.push({ level: 'ok', title: 'Финансы', text: `Выручка: ${formatMoney(reportMetrics.finances.revenue)}.` });
+  } else if (reportMetrics.finances && !reportMetrics.finances.found) {
+    factors.push({ level: 'warn', title: 'Финансы', text: 'Финансовая отчетность не найдена.' });
+  }
+
+  let risk = 'Низкий';
+  let score = 88;
+  let cls = '';
+  if (points >= 55) { risk = 'Высокий'; score = 35; cls = 'bad'; }
+  else if (points >= 22) { risk = 'Средний'; score = 65; cls = 'warn'; }
+  return { risk, score, cls, factors };
+}
+
+function updateRiskDashboard() {
+  if (!currentCompany) return;
+  const summary = getRiskSummary();
+  const circle = document.getElementById('riskCircle');
+  const status = document.getElementById('riskStatus');
+  const riskText = document.getElementById('summaryRisk');
+  const financeText = document.getElementById('summaryFinance');
+  const casesText = document.getElementById('summaryCases');
+  const fsspText = document.getElementById('summaryFssp');
+  if (circle) { circle.className = `risk-circle ${summary.cls}`; circle.textContent = summary.score; }
+  if (status) { status.className = `status-pill ${summary.risk === 'Высокий' ? 'bad' : summary.risk === 'Низкий' ? 'ok' : 'warn'}`; status.textContent = `Риск: ${summary.risk}`; }
+  if (riskText) riskText.textContent = summary.risk;
+  if (financeText) financeText.textContent = reportMetrics.finances ? (reportMetrics.finances.found ? formatMoney(reportMetrics.finances.revenue) : 'Нет данных') : 'Загрузка...';
+  if (casesText) casesText.textContent = reportMetrics.cases ? `${reportMetrics.cases.total} дел` : 'Загрузка...';
+  if (fsspText) fsspText.textContent = reportMetrics.enforcements ? `${reportMetrics.enforcements.total} произв.` : 'Загрузка...';
+  renderRiskFactors();
+  const conclusion = document.getElementById('reportConclusion');
+  if (conclusion) conclusion.innerHTML = makeConclusion({ ...currentCompany, risk: summary.risk });
+}
+
+function renderRiskFactors() {
+  const box = document.getElementById('riskFactorsBox');
+  if (!box) return;
+  const summary = getRiskSummary();
+  box.innerHTML = summary.factors.map(item => `<div class="risk-badge ${item.level}">${item.level === 'bad' ? '🔴' : item.level === 'warn' ? '🟡' : '🟢'} ${escapeHtml(item.title)}<small>${escapeHtml(item.text)}</small></div>`).join('');
+}
+
+function detectCaseRole(item) {
+  const text = JSON.stringify(item || {}).toLowerCase();
+  if (text.includes('ответ')) return 'Ответчик';
+  if (text.includes('истец')) return 'Истец';
+  return 'Участник';
+}
+
+function num(value) {
+  const n = Number(String(value || 0).replace(/\s/g, '').replace(',', '.'));
+  return Number.isFinite(n) ? n : 0;
+}
+
+function formatMoney(value) {
+  const n = num(value);
+  if (!n) return '—';
+  return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 }).format(n) + ' ₽';
+}
+
+function saveCheckHistory(company) {
+  const key = 'sp_counterparty_history';
+  const old = JSON.parse(localStorage.getItem(key) || '[]');
+  old.unshift({ inn: company.inn, name: company.name, risk: company.risk, blacklist: company.blacklist, time: new Date().toISOString() });
+  localStorage.setItem(key, JSON.stringify(old.slice(0, 10)));
+}
+
+function renderHistory() {
+  const key = 'sp_counterparty_history';
+  const list = JSON.parse(localStorage.getItem(key) || '[]');
+  const box = document.getElementById('checkHistory');
+  if (!box) return;
+  if (!list.length) {
+    box.innerHTML = '<p class="small-muted">Пока проверок нет.</p>';
+    return;
+  }
+  box.innerHTML = list.map(item => `<div class="soft-card"><b>${escapeHtml(item.name)}</b><p class="small-muted">ИНН: ${escapeHtml(item.inn)} · Риск: ${escapeHtml(item.risk)} · ${new Date(item.time).toLocaleString('ru-RU')}</p>${item.blacklist ? '<span class="status-pill bad">Есть в черном списке</span>' : '<span class="status-pill ok">Не найдено в черном списке</span>'}</div>`).join('');
+}
+
+initAccessBlock();
+renderHistory();
+</script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Поиск закупок</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .tender-layout{display:flex;flex-direction:column;gap:14px}
+    .tender-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .tender-input,.tender-select{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:13px 14px;background:rgba(255,255,255,.08);color:inherit;font-size:15px;outline:none}
+    .tender-input::placeholder{color:rgba(255,255,255,.55)}
+    .tender-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .tender-results{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+    .tender-card{border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:16px;background:rgba(255,255,255,.06);box-shadow:0 10px 26px rgba(0,0,0,.18)}
+    .tender-title{font-weight:800;font-size:16px;line-height:1.25;margin-bottom:10px}
+    .tender-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+    .tender-badge{font-size:12px;border-radius:999px;padding:6px 9px;background:rgba(37,99,235,.18);color:#93c5fd}
+    .tender-text{font-size:14px;line-height:1.45;opacity:.86;margin-bottom:12px}
+    .tender-card-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .mini-btn{border:none;border-radius:12px;padding:10px 12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;cursor:pointer}
+    .mini-btn.secondary{background:rgba(255,255,255,.10)}
+    .status-box{border-radius:14px;padding:12px;background:rgba(255,255,255,.07);font-size:14px;line-height:1.4}
+    .empty-box{border-radius:18px;padding:18px;background:rgba(255,255,255,.06);opacity:.86}
+    @media(max-width:700px){.tender-grid{grid-template-columns:1fr}.tender-actions,.tender-card-actions{flex-direction:column}.mini-btn{width:100%;text-align:center}.content{padding-bottom:90px}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="page-header">
+      <button class="back-btn" onclick="goHome()">←</button>
+      <div class="page-title">Поиск закупок</div>
+      <div class="header-spacer"></div>
+    </header>
+
+    <main class="content">
+      <section class="hero-card section-hero section-card-blue">
+        <div class="section-hero-top">
+          <div class="section-icon">📑</div>
+          <div>
+            <div class="section-mini-title">ЕИС / СБИС</div>
+            <h1 class="section-hero-title">Тендерный поисковик</h1>
+          </div>
+        </div>
+        <p class="section-description">
+          Введите параметры, найдите закупку, откройте карточку или запросите документы. Доступ по PRO.
+        </p>
+      </section>
+
+      <section class="form-card tender-layout">
+        <div class="tender-grid">
+          <input id="queryInput" class="tender-input" placeholder="Ключевые слова" value="строительство">
+          <input id="regionInput" class="tender-input" placeholder="Регион">
+          <input id="priceFromInput" class="tender-input" placeholder="Цена от" inputmode="numeric">
+          <input id="priceToInput" class="tender-input" placeholder="Цена до" inputmode="numeric">
+          <select id="lawInput" class="tender-select">
+            <option value="">44-ФЗ и 223-ФЗ</option>
+            <option value="44">Только 44-ФЗ</option>
+            <option value="223">Только 223-ФЗ</option>
+          </select>
+          <input id="pageInput" class="tender-input" placeholder="Страница" value="1" inputmode="numeric">
+        </div>
+
+        <div class="tender-actions">
+          <button class="submit-button" onclick="searchTenders(true)">Найти закупки</button>
+          <button class="mini-btn secondary" onclick="saveTenderFilter()">Сохранить фильтр</button>
+          <button class="mini-btn secondary" onclick="exportTenders()">Excel</button>
+        </div>
+
+        <div id="tenderStatus" class="status-box">Готов к поиску. Введите запрос и нажмите «Найти закупки».</div>
+      </section>
+
+      <section id="tenderResults" class="tender-results"></section>
+
+      <div class="tender-actions" style="margin-top:14px;">
+        <button class="mini-btn secondary" onclick="prevPage()">← Назад</button>
+        <button class="mini-btn" onclick="nextPage()">Следующая страница →</button>
+      </div>
+
+      <button class="home-button" onclick="goHome()">На главную</button>
+    </main>
+  </div>
+
+  <script src="/app-core.js"></script>
+  <script src="/script.js"></script>
+  <script src="/old-bugs-fix.js"></script>
+  <script src="/registration-overlay-fix.js"></script>
+  <script src="/human-logs-fix.js"></script>
+
+  <script>
+    const TENDER_API_BASE = "http://176.98.178.53:5000";
+
+    function getTenderParams() {
+      return {
+        query: document.getElementById("queryInput").value.trim() || "строительство",
+        region: document.getElementById("regionInput").value.trim(),
+        price_from: document.getElementById("priceFromInput").value.trim(),
+        price_to: document.getElementById("priceToInput").value.trim(),
+        law: document.getElementById("lawInput").value,
+        page: document.getElementById("pageInput").value || "1"
+      };
+    }
+
+    function setTenderStatus(text) {
+      document.getElementById("tenderStatus").textContent = text;
+    }
+
+    function tenderUrl(path, params) {
+      const url = new URL(TENDER_API_BASE + path);
+      Object.entries(params || {}).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && String(value).trim() !== "") {
+          url.searchParams.set(key, value);
+        }
+      });
+      return url.toString();
+    }
+
+    async function searchTenders(resetPage) {
+      if (typeof SP !== "undefined" && !SP.requireAccess("tender_search", "Тендерный поисковик доступен по PRO")) {
+        return;
+      }
+
+      if (resetPage) document.getElementById("pageInput").value = "1";
+
+      const params = getTenderParams();
+      const resultsBox = document.getElementById("tenderResults");
+      resultsBox.innerHTML = "";
+      setTenderStatus("Идёт поиск закупок...");
+
+      try {
+        const response = await fetch(tenderUrl("/api/search", params));
+        const data = await response.json();
+
+        if (!data.success) {
+          throw new Error(data.message || "Ошибка поиска");
+        }
+
+        renderTenders(data.results || []);
+        setTenderStatus("Найдено: " + (data.count || 0) + ". Страница: " + params.page);
+      } catch (error) {
+        setTenderStatus("Ошибка подключения к backend: " + error.message);
+        resultsBox.innerHTML = '<div class="empty-box">Проверь, что backend на VPS запущен: <b>python3 app.py</b></div>';
+      }
+    }
+
+    function renderTenders(items) {
+      const resultsBox = document.getElementById("tenderResults");
+
+      if (!items.length) {
+        resultsBox.innerHTML = '<div class="empty-box">Закупки не найдены. Попробуй изменить запрос или фильтры.</div>';
+        return;
+      }
+
+      resultsBox.innerHTML = items.map(item => {
+        const price = item.price ? Number(item.price).toLocaleString("ru-RU") + " ₽" : "Цена не указана";
+        const link = item.link || "#";
+
+        return `
+          <article class="tender-card">
+            <div class="tender-title">${escapeHtml(item.title || "Закупка")}</div>
+            <div class="tender-meta">
+              <span class="tender-badge">${escapeHtml(item.source || "Источник")}</span>
+              <span class="tender-badge">${escapeHtml(item.law || "44/223")}</span>
+              <span class="tender-badge">${price}</span>
+            </div>
+            <div class="tender-text">${escapeHtml(item.text || "").slice(0, 700)}</div>
+            <div class="tender-card-actions">
+              <a class="mini-btn" href="${link}" target="_blank">Открыть закупку</a>
+              <button class="mini-btn secondary" onclick="loadTenderDocuments('${escapeAttr(item.source)}','${escapeAttr(item.id)}')">Документы</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    async function loadTenderDocuments(source, id) {
+      if (!source || !id) {
+        alert("Нет данных закупки для документов");
+        return;
+      }
+
+      try {
+        const response = await fetch(TENDER_API_BASE + "/api/documents/" + encodeURIComponent(source) + "/" + encodeURIComponent(id));
+        const data = await response.json();
+        alert("Документы: " + JSON.stringify(data.documents || [], null, 2));
+      } catch (error) {
+        alert("Документы пока не загрузились: " + error.message);
+      }
+    }
+
+    async function saveTenderFilter() {
+      if (typeof SP !== "undefined" && !SP.requireAccess("tender_search", "Сохранение фильтров доступно по PRO")) {
+        return;
+      }
+
+      const params = getTenderParams();
+      const user = typeof SP !== "undefined" ? SP.user() : { name: "guest" };
+
+      try {
+        await fetch(TENDER_API_BASE + "/api/filters/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user_id: user.phone || user.email || user.name || "guest",
+            name: "Фильтр: " + params.query,
+            ...params
+          })
+        });
+
+        setTenderStatus("Фильтр сохранён.");
+      } catch (error) {
+        setTenderStatus("Не удалось сохранить фильтр: " + error.message);
+      }
+    }
+
+    function exportTenders() {
+      const params = getTenderParams();
+      window.open(tenderUrl("/api/export", params), "_blank");
+    }
+
+    function nextPage() {
+      const pageInput = document.getElementById("pageInput");
+      pageInput.value = String((parseInt(pageInput.value || "1", 10) || 1) + 1);
+      searchTenders(false);
+    }
+
+    function prevPage() {
+      const pageInput = document.getElementById("pageInput");
+      const current = parseInt(pageInput.value || "1", 10) || 1;
+      pageInput.value = String(Math.max(1, current - 1));
+      searchTenders(false);
+    }
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, (s) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[s]));
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value).replace(/`/g, "");
+    }
+  </script>
+</body>
+</html>

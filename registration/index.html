@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Регистрация</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+  <header class="page-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="page-title">Регистрация</div>
+    <div class="header-spacer"></div>
+  </header>
+
+  <main class="content">
+    <section class="hero-card section-hero section-card-cyan">
+      <div class="section-hero-top">
+        <div class="section-icon">👤</div>
+        <div>
+          <div class="section-mini-title">аккаунт</div>
+          <h1 class="section-hero-title">Создать профиль</h1>
+        </div>
+      </div>
+      <p class="section-description">Создайте обычный аккаунт пользователя. Роль: user, тариф: free.</p>
+    </section>
+
+    <form class="form-card" onsubmit="registerUser(event)">
+      <div class="form-row">
+        <div class="field-block"><label>Имя *</label><input name="name" required placeholder="Иван"></div>
+        <div class="field-block"><label>Фамилия</label><input name="surname" placeholder="Необязательно"></div>
+      </div>
+      <div class="field-block"><label>Имя в чатах *</label><input name="displayName" required placeholder="Как вас видят в чате"></div>
+      <div class="form-row">
+        <div class="field-block"><label>Телефон *</label><input name="phone" required placeholder="+7..."></div>
+        <div class="field-block"><label>Почта *</label><input name="email" type="email" required placeholder="mail@example.ru"></div>
+      </div>
+      <div class="field-block"><label>ИНН компании</label><input name="inn" placeholder="Необязательно"></div>
+      <div class="field-block"><label>Сайт / Telegram</label><input name="link" placeholder="Необязательно"></div>
+      <div class="field-block"><label>Пароль *</label><input name="password" type="password" required placeholder="Придумайте пароль"></div>
+      <button class="submit-button">Создать аккаунт</button>
+    </form>
+
+    <button class="home-button" onclick="goHome()">На главную</button>
+  </main>
+</div>
+<script src="/app-core.js"></script>
+<script src="/script.js"></script>
+<script>
+function registerUser(e){
+  e.preventDefault();
+  const f = e.target;
+  try {
+    if (window.SPAuth) {
+      SPAuth.register({
+        name:f.name.value.trim(),
+        surname:f.surname.value.trim(),
+        displayName:f.displayName.value.trim(),
+        phone:f.phone.value.trim(),
+        email:f.email.value.trim(),
+        inn:f.inn.value.trim(),
+        link:f.link.value.trim(),
+        password:f.password.value
+      });
+    } else {
+      SP.saveUser({
+        role:'user', plan:'free',
+        name:f.name.value.trim(),
+        surname:f.surname.value.trim(),
+        displayName:f.displayName.value.trim(),
+        phone:f.phone.value.trim(),
+        email:f.email.value.trim(),
+        inn:f.inn.value.trim(),
+        link:f.link.value.trim()
+      });
+    }
+    alert('Аккаунт создан. Вы вошли как обычный пользователь.');
+    window.location.href='/profile';
+  } catch(err) {
+    alert(err.message);
+  }
+}
+</script>
+<script src="/old-bugs-fix.js"></script>\n<script src="/registration-overlay-fix.js"></script>
+<script src="/human-logs-fix.js"></script>
+</body>
+</html>
